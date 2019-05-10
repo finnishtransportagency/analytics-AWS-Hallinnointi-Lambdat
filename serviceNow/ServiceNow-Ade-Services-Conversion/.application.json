@@ -1,0 +1,10 @@
+{
+    "DeploymentMethod": "lambda",
+    "Functions": {
+        "ServiceNow-Ade-Services-Conversion": {
+            "PhysicalId": {
+                "eu-central-1": "ServiceNow-Ade-Services-Conversion"
+            }
+        }
+    }
+}

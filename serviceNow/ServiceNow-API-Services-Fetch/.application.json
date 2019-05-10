@@ -1,0 +1,10 @@
+{
+    "DeploymentMethod": "lambda",
+    "Functions": {
+        "ServiceNow-API-Services-Fetch": {
+            "PhysicalId": {
+                "eu-central-1": "ServiceNow-API-Services-Fetch"
+            }
+        }
+    }
+}
