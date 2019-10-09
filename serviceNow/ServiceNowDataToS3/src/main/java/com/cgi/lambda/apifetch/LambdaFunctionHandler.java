@@ -1,5 +1,6 @@
 package com.cgi.lambda.apifetch;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 
+import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.parser.txt.CharsetDetector;
 import org.apache.tika.parser.txt.CharsetMatch;
 
@@ -180,13 +182,17 @@ public class LambdaFunctionHandler implements RequestHandler<Object, String> {
 		URLConnection uc = uurl.openConnection();
 		uc.setRequestProperty("Authorization", "Basic " + base64Login);
 		
+		// Kaytetaan buffered ja tikainputstreameja, jotta mark ja reset toimii
+		// ja streami luetaan tunnistamiseen jalkeen taas alusta
 		InputStream inputstream = uc.getInputStream();
+		BufferedInputStream bufferedstream = new BufferedInputStream(inputstream);
 		
 		// koitetaan tunnistaa merkisto ja varmistaa, etta se vastaa sovittua
 		try {
+			TikaInputStream tikastream = TikaInputStream.get(bufferedstream);
 			context.getLogger().log("## Odotettu merkisto: " + charset);
 			charsetDetector.setDeclaredEncoding(charset);
-			charsetDetector.setText(inputstream);
+			charsetDetector.setText(tikastream);
 			CharsetMatch match = charsetDetector.detect();
 			context.getLogger().log("## Tunnistettu merkisto " + match.getName());
 			context.getLogger().log("Merkisto tunnistettu varmuudella: " + match.getConfidence());
@@ -204,7 +210,7 @@ public class LambdaFunctionHandler implements RequestHandler<Object, String> {
 		}
 
 		// Start reading
-		BufferedReader in = new BufferedReader(new InputStreamReader(inputstream, "UTF-8"));
+		BufferedReader in = new BufferedReader(new InputStreamReader(bufferedstream, "UTF-8"));
 
 		String line;
 		StringBuilder csv = new StringBuilder();
