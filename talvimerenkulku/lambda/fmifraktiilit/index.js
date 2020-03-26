@@ -35,11 +35,14 @@ exports.handler = async (event) => {
             console.log('## end date');
             console.log(enddate);
 
-            const dateparams = '&starttime=' + begindate + '&endtime=' + enddate;
+            //muutettu hakemaan maksimimaara ennusteita eika rajoiteta enaa 9 paivaan
+            const dateparams = '&starttime=' + begindate; //+ '&endtime=' + enddate;
+            const timesteps = 57; //14 pv + 1 timestep seuraavaan keskiyohon
+            const timestepparams = '&timesteps=' + timesteps;
 
             const options = {
                 host: process.env.fmiHost,
-                path: process.env.apiKey + process.env.fraktiilitURL + dateparams
+                path: process.env.apiKey + process.env.fraktiilitURL + dateparams + timestepparams
             }
             
             console.log(options);
