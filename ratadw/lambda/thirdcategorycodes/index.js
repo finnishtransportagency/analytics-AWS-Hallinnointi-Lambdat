@@ -10,7 +10,8 @@ exports.handler = async (event) => {
         // Lambda Code Here
         waterfall([
             downloadCodes,
-            saveJSON
+            saveJSON,
+            createCSV
         ], function(err, result){
             if (err) {
                 console.log(err);
@@ -76,11 +77,49 @@ exports.handler = async (event) => {
                 } else {
                   console.log('## save json success!');
                   console.log('## ' + res);
-                  callback(null, 'OK');
+                  callback(null, jsondata);
                 }
             });
 
             // end saveJSON
+        }
+
+        const CSV_SEPARATOR = ',';
+        const CSV_LINE_BREAK = '\r\n';
+        function createCSV(jsondata, callback) {
+            let jsonObj = JSON.parse(jsondata);
+            console.log('## create csv');
+            const csvheader = 'TARK_SYYKOODI,TARK_SYYKOODI_SELITE,ALKU_PVM,LOPPU_PVM'+CSV_LINE_BREAK;
+            let csvdata = '';
+            csvdata += csvheader;
+            jsonObj.forEach(code => {
+                csvdata += code.thirdCategoryCode + CSV_SEPARATOR +
+                        '"'+code.thirdCategoryName+'"' + CSV_SEPARATOR +
+                        code.validFrom + CSV_SEPARATOR +
+                        code.validTo + CSV_LINE_BREAK;
+            });
+
+            const csvbuffer = Buffer.from(csvdata,'latin1');
+            const options = {
+                Bucket: process.env.workBucket,
+                Key: process.env.prefix + '/' + process.env.prefix + '.csv',
+                ContentType: 'text/csv',
+                ContentLength: csvbuffer.length, 
+                Body: csvbuffer 
+            }
+
+            s3.putObject(options, function(err, resp){
+                if (err){  
+                    console.log(err);
+                    reject(err);
+                } else {
+                  console.log('## save csv success!');
+                  console.log('## ' + resp);
+                  callback(null, 'OK');
+                }
+            });
+
+            // end create csv
         }
 
         // end promise

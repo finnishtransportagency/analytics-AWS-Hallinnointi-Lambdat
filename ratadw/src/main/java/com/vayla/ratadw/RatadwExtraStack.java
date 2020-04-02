@@ -16,6 +16,8 @@ import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketEncryption;
 import software.amazon.awscdk.services.s3.BucketProps;
+import software.amazon.awscdk.services.s3.NotificationKeyFilter;
+import software.amazon.awscdk.services.s3.notifications.LambdaDestination;
 
 public class RatadwExtraStack extends Stack {
     public RatadwExtraStack(final Construct scope, final String id) {
@@ -41,7 +43,7 @@ public class RatadwExtraStack extends Stack {
  		Map<String, String> environment = new HashMap<String, String>();
  		environment.put("digitrafficHost", "rata.digitraffic.fi");
  		environment.put("causecodesURL", "/api/v1/metadata/cause-category-codes");
- 		environment.put("prefix", "syyluokat");
+ 		environment.put("prefix", "ratadw_syyluokat");
  		environment.put("workBucket", workBucket.getBucketName());
  		
  		// Causecodes lambda
@@ -64,7 +66,7 @@ public class RatadwExtraStack extends Stack {
  		Map<String, String> environment2 = new HashMap<String, String>();
  		environment2.put("digitrafficHost", "rata.digitraffic.fi");
  		environment2.put("detailedcodesURL", "/api/v1/metadata/detailed-cause-category-codes");
- 		environment2.put("prefix", "syykoodit");
+ 		environment2.put("prefix", "ratadw_syykoodit");
  		environment2.put("workBucket", workBucket.getBucketName());
  		
  		// Detailedcodes lambda
@@ -87,7 +89,7 @@ public class RatadwExtraStack extends Stack {
  		Map<String, String> environment3 = new HashMap<String, String>();
  		environment3.put("digitrafficHost", "rata.digitraffic.fi");
  		environment3.put("thirdcategorycodesURL", "/api/v1/metadata/third-cause-category-codes");
- 		environment3.put("prefix", "tarkatsyykoodit");
+ 		environment3.put("prefix", "ratadw_tarkatsyykoodit");
  		environment3.put("workBucket", workBucket.getBucketName());
  		
  		// Detailedcodes lambda
@@ -106,10 +108,10 @@ public class RatadwExtraStack extends Stack {
         /************************** COMBINE CODES ***************************/
         // Combinecodes lambdan ymparistomuuttujat
  		Map<String, String> environment4 = new HashMap<String, String>();
- 		environment4.put("thirdcategorycodesKey", "tarkatsyykoodit/tarkatsyykoodit.json");
-        environment4.put("detailedcodesKey", "syykoodit/syykoodit.json");
-        environment4.put("causecodesKey", "syyluokat/syyluokat.json");
-        environment4.put("csvprefix", "koodisto/koodisto.csv");
+ 		environment4.put("thirdcategorycodesKey", "ratadw_tarkatsyykoodit/ratadw_tarkatsyykoodit.json");
+        environment4.put("detailedcodesKey", "ratadw_syykoodit/ratadw_syykoodit.json");
+        environment4.put("causecodesKey", "ratadw_syyluokat/ratadw_syyluokat.json");
+        environment4.put("csvprefix", "ratadw_koodisto/ratadw_koodisto.csv");
  		environment4.put("workBucket", workBucket.getBucketName());
  		
  		// Combinecodes lambda
@@ -125,5 +127,29 @@ public class RatadwExtraStack extends Stack {
                 .effect(Effect.ALLOW).actions(Arrays.asList("s3:*"))
                 .resources(Arrays.asList("*")).build());
 
+        /************************** CSV TO ADE ***************************/
+        // Manifest lambdan ymparistomuuttujat
+        Map<String, String> environment5 = new HashMap<String, String>();
+ 		environment5.put("workBucket", workBucket.getBucketName());
+ 		environment5.put("adeBucket", "dummyadebucket");
+ 		
+ 		// Manifest Lambda
+ 		final Function csv2adeLambda = Function.Builder.create(this, "RataDWCsv2AdeLambda")
+				.functionName("RataDWCsv2Ade").timeout(Duration.minutes(5)).memorySize(1024)
+				.code(Code.fromAsset("lambda" + File.separator + "csv2ade" + File.separator + "ratadw-csv2ade.zip"))
+				.runtime(software.amazon.awscdk.services.lambda.Runtime.NODEJS_12_X).environment(environment5)
+				.handler("index.handler").build();
+ 		
+ 		// S3 oikeudet
+ 		csv2adeLambda
+		.addToRolePolicy(PolicyStatement.Builder.create()
+				.effect(Effect.ALLOW).actions(Arrays.asList("s3:*"))
+				.resources(Arrays.asList("*")).build());
+ 		
+ 		// Triggeri csv tiedostoille, joka kaynnistaa manifest luonnin
+ 		// ja aden kansioon kopioinnin
+ 		NotificationKeyFilter csvfilter = NotificationKeyFilter.builder().suffix(".csv").build();
+ 		workBucket.addEventNotification(software.amazon.awscdk.services.s3.EventType.OBJECT_CREATED_PUT, 
+ 				new LambdaDestination(csv2adeLambda), csvfilter);
     }
 }

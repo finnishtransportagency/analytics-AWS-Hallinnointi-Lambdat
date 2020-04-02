@@ -41,7 +41,7 @@ exports.handler = async (event) => {
                     console.log('## got third category codes');
                     //console.log(data);
 
-                    var jsonObj = JSON.parse(data.Body.toString('latin1'));
+                    let jsonObj = JSON.parse(data.Body.toString('latin1'));
                     callback(null, jsonObj);
                 }
             })
@@ -68,7 +68,7 @@ exports.handler = async (event) => {
                     console.log('## got detailed codes');
                     //console.log(data);
 
-                    var jsonObj = JSON.parse(data.Body.toString('latin1'));
+                    let jsonObj = JSON.parse(data.Body.toString('latin1'));
 
                     callback(null, jsonObj, thirdcategory);
                 }
@@ -96,7 +96,7 @@ exports.handler = async (event) => {
                     console.log('## got cause codes');
                     //console.log(data);
 
-                    var jsonObj = JSON.parse(data.Body.toString('latin1'));
+                    let jsonObj = JSON.parse(data.Body.toString('latin1'));
 
                     callback(null, jsonObj, details, thirdcategory);
                 }
@@ -112,7 +112,7 @@ exports.handler = async (event) => {
             console.log('## third category codes');
             thirdcategory.forEach(tccode => {
                 //console.log(tccode);
-                var ratadwsyykoodi = {};
+                let ratadwsyykoodi = {};
 
                 const tccodeId = tccode.thirdCategoryCode;
                 //console.log(tccodeId);
@@ -122,7 +122,7 @@ exports.handler = async (event) => {
                 //console.log(ccode);
 
                 //create a combined ratadwsyykodi from the above
-                ratadwsyykoodi.syyn_aiheuttaja = 'n/a'; // where from?
+                ratadwsyykoodi.syyn_aiheuttaja = ''; // to be filled in Snowflake
                 ratadwsyykoodi.syyluokka = ccode[0].categoryCode;
                 ratadwsyykoodi.syykoodi = dcode[0].detailedCategoryCode;
                 ratadwsyykoodi.tark_syykoodi = tccode.thirdCategoryCode;
@@ -148,7 +148,7 @@ exports.handler = async (event) => {
             let csvdata = '';
             csvdata += csvheader;
             koodisto.forEach(koodi => {
-                var row = '';
+                let row = '';
                 row = koodi.syyn_aiheuttaja + CSV_SEPARATOR +
                     koodi.syyluokka + CSV_SEPARATOR +
                     koodi.syykoodi + CSV_SEPARATOR +
