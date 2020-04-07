@@ -48,7 +48,7 @@ public class LambdaFunctionHandler implements RequestHandler<Object, String> {
 	private EnrichServiceNowDataWithCoordinates enrichmentCenter;
 	// regex for accepted or expected characters in Service Now json. most notably alphanumeric chars incl
 	// scandic letters, and chars used in json notation
-	private static final String validchars = "[^a-zA-Z0-9åÅäÄöÖ\\ \\.\\,\\\"\\:\\(\\)\\[\\]\\{\\}\\-\\_\\/]";
+	private static final String validchars = "[^a-öA-Ö0-9\\ \\t\\.\\,\\\"\\:\\;\\=\\?\\&\\!\\@\\*\\<\\>\\+\\%\\(\\)\\[\\]\\{\\}\\-\\_\\/\\\\]";
 
 	@Override
 	public String handleRequest(Object input, Context context) {
@@ -151,7 +151,7 @@ public class LambdaFunctionHandler implements RequestHandler<Object, String> {
 			Matcher matcher = pattern.matcher(data);
 			if(matcher.find()) {
 				String invalidchars = matcher.group();
-				context.getLogger().log(alertString + "JSON tiedostosta lyotyi odottamaton merkkijono: " + invalidchars);
+				context.getLogger().log(alertString + "JSON tiedostosta lyotyi odottamaton merkki: " + invalidchars);
 			}
 		} catch (Exception e) {
 			context.getLogger().log("## Virhe regex tarkistuksessa: " + e.getMessage());
@@ -195,7 +195,7 @@ public class LambdaFunctionHandler implements RequestHandler<Object, String> {
 			charsetDetector.setText(tikastream);
 			CharsetMatch match = charsetDetector.detect();
 			context.getLogger().log("## Tunnistettu merkisto " + match.getName());
-			context.getLogger().log("Merkisto tunnistettu varmuudella: " + match.getConfidence());
+			context.getLogger().log("## Merkisto tunnistettu varmuudella: " + match.getConfidence());
 			if(match == null || !match.getName().equalsIgnoreCase(charset)) {
 				StringBuffer sb = new StringBuffer(alertString);
 				sb.append("Merkisto ei vastaa odotettua | ");
