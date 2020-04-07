@@ -93,6 +93,7 @@ exports.handler = async (event) => {
             let csvdata = '';
             csvdata += csvheader;
             jsonObj.forEach(code => {
+                if(!code.validTo) code.validTo = '2100-01-01';
                 csvdata += code.detailedCategoryCode + CSV_SEPARATOR +
                         '"'+code.detailedCategoryName+'"' + CSV_SEPARATOR +
                         code.validFrom + CSV_SEPARATOR +

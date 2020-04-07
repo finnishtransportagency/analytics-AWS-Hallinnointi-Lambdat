@@ -65,7 +65,7 @@ public class RatadwExtraStack extends Stack {
         // Detailedcodes lambdan ymparistomuuttujat
  		Map<String, String> environment2 = new HashMap<String, String>();
  		environment2.put("digitrafficHost", "rata.digitraffic.fi");
- 		environment2.put("detailedcodesURL", "/api/v1/metadata/detailed-cause-category-codes");
+ 		environment2.put("detailedcodesURL", "/api/v1/metadata/detailed-cause-category-codes?show_inactive=true");
  		environment2.put("prefix", "ratadw_syykoodit");
  		environment2.put("workBucket", workBucket.getBucketName());
  		
@@ -88,7 +88,7 @@ public class RatadwExtraStack extends Stack {
         // Thirdcategorycodes lambdan ymparistomuuttujat
  		Map<String, String> environment3 = new HashMap<String, String>();
  		environment3.put("digitrafficHost", "rata.digitraffic.fi");
- 		environment3.put("thirdcategorycodesURL", "/api/v1/metadata/third-cause-category-codes");
+ 		environment3.put("thirdcategorycodesURL", "/api/v1/metadata/third-cause-category-codes?show_inactive=true");
  		environment3.put("prefix", "ratadw_tarkatsyykoodit");
  		environment3.put("workBucket", workBucket.getBucketName());
  		
