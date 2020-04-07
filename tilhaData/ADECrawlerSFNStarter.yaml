@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  ADECrawlerSFNStarter:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs10.x
+      CodeUri: .
+      Description: ''
+      MemorySize: 128
+      Timeout: 3
+      Role: >-
+        arn:aws:iam::593223377027:role/service-role/ADECrawlerSFNStarter-role-65ezsz95
+      Events:
+        BucketEvent1:
+          Type: S3
+          Properties:
+            Bucket:
+              Ref: Bucket1
+            Events:
+              - 's3:ObjectCreated:*'
+            Filter:
+              S3Key:
+                Rules:
+                  - Name: prefix
+                    Value: manifest/
+      Environment:
+        Variables:
+          SN_ARN: >-
+            arn:aws:states:eu-central-1:593223377027:stateMachine:Ade-Crawler-files
+  Bucket1:
+    Type: 'AWS::S3::Bucket'
