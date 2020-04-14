@@ -30,6 +30,7 @@ Resources:
           destBucket: servicenowadebucket
           destBucketManifest: file-load-ade-runtime-dev
           destBucketManifestPrefix: manifest/servicenow_cmdb_ci_service/
+          destBucketManifestProd: file-load-ade-runtime-prod
           srcBucket: servicenowlandingzone2
   Bucket1:
     Type: 'AWS::S3::Bucket'
