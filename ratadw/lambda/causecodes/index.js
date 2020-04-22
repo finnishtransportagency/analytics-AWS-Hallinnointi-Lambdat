@@ -10,6 +10,7 @@ exports.handler = async (event) => {
         // Lambda Code Here
         waterfall([
             downloadCodes,
+            checkDates,
             saveJSON,
             createCSV
         ], function(err, result){
@@ -53,6 +54,19 @@ exports.handler = async (event) => {
             // end downloadCodes
         }
 
+        // HUOM! taalla muokataan alkuperaista dataa, eli lisataan toistaiseksi voimassa oleviin koodeihin 
+        // kaukainen paivamaara 1.1.2100
+        function checkDates(jsondata, callback) {
+            let jsonobj = JSON.parse(jsondata);
+            jsonobj.forEach(obj => {
+                if(!obj.validTo) obj.validTo = '2100-01-01';
+            })
+
+            callback(null, JSON.stringify(jsonobj));
+            
+            //end checkDates
+        }
+
         function saveJSON(jsondata, callback) {
             console.log('## save JSON');
             console.log(jsondata);
@@ -93,6 +107,7 @@ exports.handler = async (event) => {
             let csvdata = '';
             csvdata += csvheader;
             jsonObj.forEach(code => {
+                if(!code.validTo) code.validTo = '2100-01-01';
                 csvdata += code.categoryCode + CSV_SEPARATOR +
                         '"'+code.categoryName+'"' + CSV_SEPARATOR +
                         code.validFrom + CSV_SEPARATOR +

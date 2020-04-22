@@ -42,7 +42,7 @@ public class RatadwExtraStack extends Stack {
         // Causecodes lambdan ymparistomuuttujat
  		Map<String, String> environment = new HashMap<String, String>();
  		environment.put("digitrafficHost", "rata.digitraffic.fi");
- 		environment.put("causecodesURL", "/api/v1/metadata/cause-category-codes");
+ 		environment.put("causecodesURL", "/api/v1/metadata/cause-category-codes?show_inactive=true");
  		environment.put("prefix", "ratadw_syyluokat");
  		environment.put("workBucket", workBucket.getBucketName());
  		
@@ -111,7 +111,8 @@ public class RatadwExtraStack extends Stack {
  		environment4.put("thirdcategorycodesKey", "ratadw_tarkatsyykoodit/ratadw_tarkatsyykoodit.json");
         environment4.put("detailedcodesKey", "ratadw_syykoodit/ratadw_syykoodit.json");
         environment4.put("causecodesKey", "ratadw_syyluokat/ratadw_syyluokat.json");
-        environment4.put("csvprefix", "ratadw_koodisto/ratadw_koodisto.csv");
+        environment4.put("sourcecodesKey", "ratadw_syynaiheuttaja/ratadw_syynaiheuttaja.json");
+        environment4.put("csvprefix", "digitraffic_syykoodisto/digitraffic_syykoodisto.csv");
  		environment4.put("workBucket", workBucket.getBucketName());
  		
  		// Combinecodes lambda
@@ -123,6 +124,28 @@ public class RatadwExtraStack extends Stack {
  		
  		// S3 oikeudet
  		yhdistekooditLambda
+            .addToRolePolicy(PolicyStatement.Builder.create()
+                .effect(Effect.ALLOW).actions(Arrays.asList("s3:*"))
+                .resources(Arrays.asList("*")).build());
+
+
+        /************************** READ CODES FROM EXCEL ***************************/
+        // Combinecodes lambdan ymparistomuuttujat
+ 		Map<String, String> environment6 = new HashMap<String, String>();
+        environment6.put("excelkey", "ratadw_syynaiheuttaja/Syykoodit_vastuutahoittain_sivutus.xlsx");
+        environment6.put("excelbucket", workBucket.getBucketName());
+        environment6.put("workBucket", workBucket.getBucketName());
+        environment6.put("prefix", "ratadw_syynaiheuttaja");
+ 		
+ 		// Combinecodes lambda
+ 		final Function aiheuttajakooditLambda = Function.Builder.create(this, "VaylaRataDWSyynaiheuttajaExcelLambda")
+            .functionName("VaylaRataDWSyynaiheuttajaExcelLambda").timeout(Duration.minutes(5)).memorySize(1024)
+            .code(Code.fromAsset("lambda" + File.separator + "xlscodereader" + File.separator + "ratadw-xlscodereader.zip"))
+            .runtime(software.amazon.awscdk.services.lambda.Runtime.NODEJS_12_X).environment(environment6)
+            .handler("index.handler").build();
+ 		
+ 		// S3 oikeudet
+ 		aiheuttajakooditLambda
             .addToRolePolicy(PolicyStatement.Builder.create()
                 .effect(Effect.ALLOW).actions(Arrays.asList("s3:*"))
                 .resources(Arrays.asList("*")).build());

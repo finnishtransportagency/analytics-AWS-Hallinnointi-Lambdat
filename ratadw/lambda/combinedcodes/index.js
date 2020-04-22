@@ -12,6 +12,7 @@ exports.handler = async (event) => {
             getThirdCategoryCodesFromS3,
             getDetailedCodesFromS3,
             getCauseCodesFromS3,
+            getSourceCodesFromS3,
             combineCodes,
             createCSV
         ], function(err, result){
@@ -105,8 +106,43 @@ exports.handler = async (event) => {
             // end getCodesFromS3
         }
 
+        function getSourceCodesFromS3(causecodes, details, thirdcategory, callback){
 
-        function combineCodes(causecodes, details, thirdcategory, callback) {
+            console.log('## get sourcecodes');
+            //console.log(details);
+
+            const options = {
+                Bucket: process.env.workBucket,
+                Key: process.env.sourcecodesKey
+            }
+            
+            console.log(options);
+
+            s3.getObject(options, function(err, data){
+                if(err){
+                    console.log(err);
+                    reject(err);
+                } else {
+                    console.log('## got cause codes');
+                    //console.log(data);
+
+                    let jsonObj = JSON.parse(data.Body.toString());
+
+                    callback(null, jsonObj, causecodes, details, thirdcategory);
+                }
+            })
+
+            // end getSourceCodesFromS3
+
+        }
+
+
+        // Yhdistaa eri tason koodit toisiinsa
+        // 1) Koodin alkuosan perusteella
+        // 2) Voimassaoloajan perusteella
+        // Sama koodi voi siis esiintya omalla tasollaan useampaan otteeseen
+        // mutta omalla voimassaoloajallaan ja todennakoisesti omalla selitteellaan
+        function combineCodes(sourcecodes, causecodes, details, thirdcategory, callback) {
             let koodisto = [];
 
             console.log('## third category codes');
@@ -114,15 +150,34 @@ exports.handler = async (event) => {
                 //console.log(tccode);
                 let ratadwsyykoodi = {};
 
+                const scode = jpath.query(sourcecodes, '$[?(@.aiheuttajakoodi=="' + tccode.thirdCategoryCode + '")]');
+                //console.log(scode);
+                //tyhja jos syyn aiheuttajaa ei loydy kasin yllapidetysta excelista
+                if(!scode || !scode[0]) {
+                    scode[0] = {};
+                }
                 const tccodeId = tccode.thirdCategoryCode;
                 //console.log(tccodeId);
-                const dcode = jpath.query(details, '$[?(@.detailedCategoryCode=="' + tccodeId.substring(0,2) + '")]');
+                const codequery = '@.detailedCategoryCode=="' + tccodeId.substring(0,2) + '"';
+                const datequery = ' @.validFrom <= "' + tccode.validFrom + '" && @.validTo >= "' + tccode.validTo + '"';
+                let jpquery = '$[?(' + codequery + ' && ' + datequery + ')]';
+                console.log('## jpquery ');
+                console.log(jpquery);
+                const dcode = jpath.query(details, jpquery);
+                if(!dcode || !dcode[0]) {
+                    dcode[0] = {};
+                }
                 //console.log(dcode);
-                const ccode = jpath.query(causecodes, '$[?(@.categoryCode=="' + tccodeId.substring(0,1) + '")]');
+                const causecodequery = '@.categoryCode=="' + tccodeId.substring(0,1) + '"';
+                jpquery = '$[?(' + causecodequery + ' && ' + datequery + ')]';
+                const ccode = jpath.query(causecodes, jpquery);
+                if(!ccode || !ccode[0]) {
+                    ccode[0] = {};
+                }
                 //console.log(ccode);
 
-                //create a combined ratadwsyykodi from the above
-                ratadwsyykoodi.syyn_aiheuttaja = ''; // to be filled in Snowflake
+                //create a combined ratadwsyykoodi from all of the above
+                ratadwsyykoodi.syyn_aiheuttaja = scode[0].aiheuttaja; 
                 ratadwsyykoodi.syyluokka = ccode[0].categoryCode;
                 ratadwsyykoodi.syykoodi = dcode[0].detailedCategoryCode;
                 ratadwsyykoodi.tark_syykoodi = tccode.thirdCategoryCode;
@@ -130,6 +185,8 @@ exports.handler = async (event) => {
                 ratadwsyykoodi.syykoodi_selite = dcode[0].detailedCategoryName;
                 ratadwsyykoodi.tark_syykoodi_selite = tccode.thirdCategoryName;
                 ratadwsyykoodi.tark_syy = tccode.thirdCategoryCode + ' ' + tccode.thirdCategoryName;
+                ratadwsyykoodi.alku_pvm = tccode.validFrom;
+                ratadwsyykoodi.loppu_pvm = tccode.validTo;
 
                 //console.log(ratadwsyykoodi);
                 koodisto.push(ratadwsyykoodi);
@@ -144,19 +201,21 @@ exports.handler = async (event) => {
         const CSV_SEPARATOR = ',';
         const CSV_LINE_BREAK = '\r\n';
         function createCSV(koodisto, callback){
-            const csvheader = 'SYYN_AIHEUTTAJA,SYYLUOKKA,SYYKOODI,TARK_SYYKOODI,SYYLUOKKA_SELITE,SYYKOODI_SELITE,TARK_SYYKOODI_SELITE,TARK_SYY\r\n';
+            const csvheader = 'SYYN_AIHEUTTAJA,SYYLUOKKA,SYYKOODI,TARK_SYYKOODI,SYYLUOKKA_SELITE,SYYKOODI_SELITE,TARK_SYYKOODI_SELITE,TARK_SYY,ALKU_PVM,LOPPU_PVM\r\n';
             let csvdata = '';
             csvdata += csvheader;
             koodisto.forEach(koodi => {
                 let row = '';
-                row = koodi.syyn_aiheuttaja + CSV_SEPARATOR +
-                    koodi.syyluokka + CSV_SEPARATOR +
-                    koodi.syykoodi + CSV_SEPARATOR +
-                    koodi.tark_syykoodi + CSV_SEPARATOR +
+                row = '"'+koodi.syyn_aiheuttaja+'"' + CSV_SEPARATOR +
+                    '"'+koodi.syyluokka+'"' + CSV_SEPARATOR +
+                    '"'+koodi.syykoodi+'"' + CSV_SEPARATOR +
+                    '"'+koodi.tark_syykoodi+'"' + CSV_SEPARATOR +
                     '"'+koodi.syyluokka_selite+'"' + CSV_SEPARATOR +
                     '"'+koodi.syykoodi_selite+'"' + CSV_SEPARATOR +
                     '"'+koodi.tark_syykoodi_selite+'"' + CSV_SEPARATOR +
-                    '"'+koodi.tark_syy+'"' + CSV_LINE_BREAK
+                    '"'+koodi.tark_syy+'"' + CSV_SEPARATOR +
+                    '"'+koodi.alku_pvm+'"' + CSV_SEPARATOR +
+                    '"'+koodi.loppu_pvm+'"' + CSV_LINE_BREAK;
 
                 csvdata += row;
             });
