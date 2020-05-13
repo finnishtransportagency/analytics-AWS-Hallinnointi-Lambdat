@@ -4,6 +4,7 @@ const s3 = new AWS.S3();
 const https = require('https');
 const waterfall = require('async-waterfall');
 const XLSX = require('xlsx');
+const moment = require('moment');
 
 exports.handler = async (event) => {
     return new Promise((resolve, reject) => {
@@ -57,15 +58,41 @@ exports.handler = async (event) => {
             wb.SheetNames.forEach(wsname => {
                 let ws = wb.Sheets[wsname];
                 //console.log(ws);
+                //TODO: read cells H2 and I2 for validFrom and validTo dates
+                let fromdatecell = ws['H2'];
+                let todatecell = ws['I2'];
+
+                console.log('## excel sheed valid date cells');
+                console.log(fromdatecell);
+                console.log(todatecell);
+
+                // read 'formatted value' from .w, .v holds excel style date number
+                let fromValue = (fromdatecell ? fromdatecell.w : undefined);
+                let toValue = (todatecell ? todatecell.w : '01/01/2100'); // undefined value interpreted as valid until further notice
+
+                console.log('## excel date cell values');
+                console.log(fromValue);
+                console.log(toValue);
+
+                //FIX: is this a bug in xlsx module, or why the MM and DD have flipped places like this?
+                let fromDate = moment(fromValue, 'MM/DD/YYYY');
+                let toDate = moment(toValue, 'MM/DD/YYYY');
+
+                console.log('## valid dates');
+                console.log(fromDate.format());
+                console.log(toDate.format());
                 
                 let jsonsheet = XLSX.utils.sheet_to_json(ws);
+                console.log('## excel sheet to json');
+                //console.log(jsonsheet);
                 jsonsheet.forEach(row => {
                     Object.keys(row).forEach(key => {
                         let jsonrow = {"aiheuttaja" : "", "aiheuttajakoodi" : ""};
-                        //let jsonrow = '{"aiheuttaja":' + key + '"aiheuttajakoodi":' + row[key] + '}';
                         jsonrow.aiheuttaja = key.toString();
                         jsonrow.aiheuttajakoodi = row[key].toString();
-                        console.log(jsonrow);
+                        jsonrow.validFrom = fromDate.format('YYYY-MM-DD');
+                        jsonrow.validTo = toDate.format('YYYY-MM-DD');
+                        //console.log(jsonrow);
 
                         koodit.push(jsonrow);
                     })
@@ -110,37 +137,37 @@ exports.handler = async (event) => {
         const CSV_SEPARATOR = ',';
         const CSV_LINE_BREAK = '\r\n';
          function createCSV(jsondata, callback) {
-        //     let jsonObj = JSON.parse(jsondata);
-        //     console.log('## create csv');
-        //     const csvheader = 'SYYLUOKKA,SYYLUOKKA_SELITE,ALKU_PVM,LOPPU_PVM'+CSV_LINE_BREAK;
-        //     let csvdata = '';
-        //     csvdata += csvheader;
-        //     jsonObj.forEach(code => {
-        //         csvdata += code.categoryCode + CSV_SEPARATOR +
-        //                 '"'+code.categoryName+'"' + CSV_SEPARATOR +
-        //                 code.validFrom + CSV_SEPARATOR +
-        //                 code.validTo + CSV_LINE_BREAK;
-        //     });
+            let jsonObj = JSON.parse(jsondata);
+            console.log('## create csv');
+            const csvheader = 'SYYNAIHEUTTAJA,SYYNAIHEUTTAJA_KOODI,ALKU_PVM,LOPPU_PVM'+CSV_LINE_BREAK;
+            let csvdata = '';
+            csvdata += csvheader;
+            jsonObj.forEach(code => {
+                csvdata += code.aiheuttaja + CSV_SEPARATOR +
+                        '"'+code.aiheuttajakoodi+'"' + CSV_SEPARATOR +
+                        code.validFrom + CSV_SEPARATOR +
+                        code.validTo + CSV_LINE_BREAK;
+            });
 
-        //     const csvbuffer = Buffer.from(csvdata,'latin1');
-        //     const options = {
-        //         Bucket: process.env.workBucket,
-        //         Key: process.env.prefix + '/' + process.env.prefix + '.csv',
-        //         ContentType: 'text/csv',
-        //         ContentLength: csvbuffer.length, 
-        //         Body: csvbuffer 
-        //     }
+            const csvbuffer = Buffer.from(csvdata,'latin1');
+            const options = {
+                Bucket: process.env.workBucket,
+                Key: process.env.prefix + '/' + process.env.prefix + '.csv',
+                ContentType: 'text/csv',
+                ContentLength: csvbuffer.length, 
+                Body: csvbuffer 
+            }
 
-        //     s3.putObject(options, function(err, resp){
-        //         if (err){  
-        //             console.log(err);
-        //             reject(err);
-        //         } else {
-        //           console.log('## save csv success!');
-        //           console.log('## ' + resp);
-        //           callback(null, 'OK');
-        //         }
-        //     });
+            s3.putObject(options, function(err, resp){
+                if (err){  
+                    console.log(err);
+                    reject(err);
+                } else {
+                  console.log('## save csv success!');
+                  console.log('## ' + resp);
+                  callback(null, 'OK');
+                }
+            });
 
             // end create csv
         }

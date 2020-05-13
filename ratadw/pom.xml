@@ -56,6 +56,12 @@
             <artifactId>s3-notifications</artifactId>
             <version>1.20.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/software.amazon.awscdk/events-targets -->
+		<dependency>
+		    <groupId>software.amazon.awscdk</groupId>
+		    <artifactId>events-targets</artifactId>
+		    <version>1.20.0</version>
+		</dependency>
 
         <!-- https://mvnrepository.com/artifact/junit/junit -->
         <dependency>

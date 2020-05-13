@@ -9,6 +9,9 @@ import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.services.events.Rule;
+import software.amazon.awscdk.services.events.Schedule;
+import software.amazon.awscdk.services.events.targets.LambdaFunction;
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
 import software.amazon.awscdk.services.lambda.Code;
@@ -173,6 +176,26 @@ public class RatadwExtraStack extends Stack {
  		// ja aden kansioon kopioinnin
  		NotificationKeyFilter csvfilter = NotificationKeyFilter.builder().suffix(".csv").build();
  		workBucket.addEventNotification(software.amazon.awscdk.services.s3.EventType.OBJECT_CREATED_PUT, 
- 				new LambdaDestination(csv2adeLambda), csvfilter);
+                 new LambdaDestination(csv2adeLambda), csvfilter);
+                 
+
+        // ajasta datan lataus joka paiva 03:25 tilin paikallista aikaa
+		Rule dailyRule = Rule.Builder.create(this, "DataSchedule").enabled(true)
+		.description("Ratadw data load schedule")
+		.schedule(Schedule.expression("cron(25 3 * * ? *)"))
+		.build();
+		
+		dailyRule.addTarget(LambdaFunction.Builder.create(syyluokatLambda).build());
+		dailyRule.addTarget(LambdaFunction.Builder.create(syykooditLambda).build());
+		dailyRule.addTarget(LambdaFunction.Builder.create(tarkatsyykooditLambda).build());
+        dailyRule.addTarget(LambdaFunction.Builder.create(aiheuttajakooditLambda).build());
+        
+        // ajasta datojen yhdistely joka paiva 03:55 tilin paikallista aikaa
+        Rule dailyRule2 = Rule.Builder.create(this, "DataSchedule2").enabled(true)
+		.description("Ratadw data combiner schedule")
+		.schedule(Schedule.expression("cron(55 3 * * ? *)"))
+		.build();
+		
+		dailyRule2.addTarget(LambdaFunction.Builder.create(yhdistekooditLambda).build());
     }
 }

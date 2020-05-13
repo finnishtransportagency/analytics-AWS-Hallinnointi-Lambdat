@@ -145,12 +145,17 @@ exports.handler = async (event) => {
         function combineCodes(sourcecodes, causecodes, details, thirdcategory, callback) {
             let koodisto = [];
 
+            // Ensin kaikille tarkimman tason koodeille rivit
             console.log('## third category codes');
             thirdcategory.forEach(tccode => {
                 //console.log(tccode);
                 let ratadwsyykoodi = {};
 
-                const scode = jpath.query(sourcecodes, '$[?(@.aiheuttajakoodi=="' + tccode.thirdCategoryCode + '")]');
+                const sourcecodequery = '@.aiheuttajakoodi=="' + tccode.thirdCategoryCode + '"';
+                //const datequery = '@.validFrom <= "' + tccode.validFrom + '" && @.validTo >= "' + tccode.validTo + '"';
+                const datequery = '@.validFrom <= "' + tccode.validTo + '" && @.validTo >= "' + tccode.validTo + '"';
+                let jpquery = '$[?(' + sourcecodequery + ' && ' + datequery + ')]';
+                const scode = jpath.query(sourcecodes, jpquery);
                 //console.log(scode);
                 //tyhja jos syyn aiheuttajaa ei loydy kasin yllapidetysta excelista
                 if(!scode || !scode[0]) {
@@ -159,8 +164,7 @@ exports.handler = async (event) => {
                 const tccodeId = tccode.thirdCategoryCode;
                 //console.log(tccodeId);
                 const codequery = '@.detailedCategoryCode=="' + tccodeId.substring(0,2) + '"';
-                const datequery = ' @.validFrom <= "' + tccode.validFrom + '" && @.validTo >= "' + tccode.validTo + '"';
-                let jpquery = '$[?(' + codequery + ' && ' + datequery + ')]';
+                jpquery = '$[?(' + codequery + ' && ' + datequery + ')]';
                 console.log('## jpquery ');
                 console.log(jpquery);
                 const dcode = jpath.query(details, jpquery);
@@ -192,6 +196,48 @@ exports.handler = async (event) => {
                 koodisto.push(ratadwsyykoodi);
             });
 
+            // Lisaksi kaikille perustason kahden merkin (P1) syykoodeille vastaavat kolmen merkin (P100) rivit
+            // Selite periytyy
+            details.forEach(detail => {
+                console.log('## satalukujen syykoodi -> tarkka syykodi muunnos');
+                console.log(detail);
+                let ratadwsyykoodi = {};
+
+                detail.thirdCategoryCode = detail.detailedCategoryCode + '00';
+                detail.thirdCategoryName = detail.detailedCategoryName + '';
+
+                // aiheuttaja
+                const sourcecodequery = '@.aiheuttajakoodi=="' + detail.thirdCategoryCode + '"';
+                const datequery = '@.validFrom <= "' + detail.validTo + '" && @.validTo >= "' + detail.validTo + '"';
+                let jpquery = '$[?(' + sourcecodequery + ' && ' + datequery + ')]';
+                const aiheuttajakoodi = jpath.query(sourcecodes, jpquery);
+                if(!aiheuttajakoodi || !aiheuttajakoodi[0]){
+                    aiheuttajakoodi[0] = {};
+                }
+
+                // syyluokka
+                const causecodequery = '@.categoryCode=="' + detail.thirdCategoryCode.substring(0,1) + '"';
+                jpquery = '$[?(' + causecodequery + ' && ' + datequery + ')]';
+                const syyluokka = jpath.query(causecodes, jpquery);
+                if(!syyluokka || !syyluokka[0]) {
+                    syyluokka[0] = {};
+                }
+
+                ratadwsyykoodi.syyn_aiheuttaja = aiheuttajakoodi[0].aiheuttaja; 
+                ratadwsyykoodi.syyluokka = syyluokka[0].categoryCode;
+                ratadwsyykoodi.syykoodi = detail.detailedCategoryCode;
+                ratadwsyykoodi.tark_syykoodi = detail.thirdCategoryCode;
+                ratadwsyykoodi.syyluokka_selite = syyluokka[0].categoryName;
+                ratadwsyykoodi.syykoodi_selite = detail.detailedCategoryName;
+                ratadwsyykoodi.tark_syykoodi_selite = detail.thirdCategoryName; 
+                ratadwsyykoodi.tark_syy = detail.thirdCategoryCode + ' ' + detail.thirdCategoryName;
+                ratadwsyykoodi.alku_pvm = detail.validFrom;
+                ratadwsyykoodi.loppu_pvm = detail.validTo;
+
+                //console.log(ratadwsyykoodi);
+                koodisto.push(ratadwsyykoodi);
+            })
+
             console.log('## koodisto valmis ' + koodisto.length);
             callback(null, koodisto);
 
@@ -220,7 +266,7 @@ exports.handler = async (event) => {
                 csvdata += row;
             });
 
-            const csvbuffer = Buffer.from(csvdata,'latin1');
+            const csvbuffer = Buffer.from(csvdata,'utf8');
             const options = {
                 Bucket: process.env.workBucket,
                 Key: process.env.csvprefix,
