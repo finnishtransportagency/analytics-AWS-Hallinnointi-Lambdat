@@ -60,16 +60,16 @@
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
-                            "key": "Name",
-                            "value": "LamStack/Lam-VPC/PublicSubnet1"
-                          },
-                          {
                             "key": "aws-cdk:subnet-name",
                             "value": "Public"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
                             "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet1"
                           }
                         ]
                       }
@@ -195,16 +195,16 @@
                         "mapPublicIpOnLaunch": true,
                         "tags": [
                           {
-                            "key": "Name",
-                            "value": "LamStack/Lam-VPC/PublicSubnet2"
-                          },
-                          {
                             "key": "aws-cdk:subnet-name",
                             "value": "Public"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
                             "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet2"
                           }
                         ]
                       }
@@ -330,16 +330,16 @@
                         "mapPublicIpOnLaunch": false,
                         "tags": [
                           {
-                            "key": "Name",
-                            "value": "LamStack/Lam-VPC/PrivateSubnet1"
-                          },
-                          {
                             "key": "aws-cdk:subnet-name",
                             "value": "Private"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
                             "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PrivateSubnet1"
                           }
                         ]
                       }
@@ -425,16 +425,16 @@
                         "mapPublicIpOnLaunch": false,
                         "tags": [
                           {
-                            "key": "Name",
-                            "value": "LamStack/Lam-VPC/PrivateSubnet2"
-                          },
-                          {
                             "key": "aws-cdk:subnet-name",
                             "value": "Private"
                           },
                           {
                             "key": "aws-cdk:subnet-type",
                             "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PrivateSubnet2"
                           }
                         ]
                       }
@@ -535,245 +535,9 @@
                 "id": "Staging",
                 "path": "LamStack/Lam-docker-image/Staging"
               },
-              "AdoptRepository": {
-                "id": "AdoptRepository",
-                "path": "LamStack/Lam-docker-image/AdoptRepository",
-                "children": {
-                  "Function": {
-                    "id": "Function",
-                    "path": "LamStack/Lam-docker-image/AdoptRepository/Function"
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "LamStack/Lam-docker-image/AdoptRepository/Resource",
-                    "children": {
-                      "Default": {
-                        "id": "Default",
-                        "path": "LamStack/Lam-docker-image/AdoptRepository/Resource/Default"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "AssetParameters": {
-            "id": "AssetParameters",
-            "path": "LamStack/AssetParameters",
-            "children": {
-              "653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc": {
-                "id": "653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc",
-                "path": "LamStack/AssetParameters/653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc",
-                "children": {
-                  "ImageName": {
-                    "id": "ImageName",
-                    "path": "LamStack/AssetParameters/653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc/ImageName"
-                  }
-                }
-              },
-              "a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7": {
-                "id": "a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7",
-                "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7",
-                "children": {
-                  "S3Bucket": {
-                    "id": "S3Bucket",
-                    "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7/S3Bucket"
-                  },
-                  "S3VersionKey": {
-                    "id": "S3VersionKey",
-                    "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7/S3VersionKey"
-                  },
-                  "ArtifactHash": {
-                    "id": "ArtifactHash",
-                    "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7/ArtifactHash"
-                  }
-                }
-              }
-            }
-          },
-          "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c": {
-            "id": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c",
-            "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c",
-            "children": {
-              "ServiceRole": {
-                "id": "ServiceRole",
-                "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": [
-                                    "ecr:GetRepositoryPolicy",
-                                    "ecr:SetRepositoryPolicy",
-                                    "ecr:DeleteRepository",
-                                    "ecr:ListImages",
-                                    "ecr:BatchDeleteImage"
-                                  ],
-                                  "Effect": "Allow",
-                                  "Resource": {
-                                    "Fn::Join": [
-                                      "",
-                                      [
-                                        "arn:",
-                                        {
-                                          "Ref": "AWS::Partition"
-                                        },
-                                        ":ecr:",
-                                        {
-                                          "Ref": "AWS::Region"
-                                        },
-                                        ":",
-                                        {
-                                          "Ref": "AWS::AccountId"
-                                        },
-                                        ":repository/",
-                                        {
-                                          "Fn::Select": [
-                                            0,
-                                            {
-                                              "Fn::Split": [
-                                                "@sha256:",
-                                                {
-                                                  "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                                                }
-                                              ]
-                                            }
-                                          ]
-                                        }
-                                      ]
-                                    ]
-                                  }
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-                            "roles": [
-                              {
-                                "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              "Code": {
-                "id": "Code",
-                "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code/Stage"
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code/AssetBucket"
-                  }
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": {
-                        "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3Bucket7CBBD48C"
-                      },
-                      "s3Key": {
-                        "Fn::Join": [
-                          "",
-                          [
-                            {
-                              "Fn::Select": [
-                                0,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057"
-                                    }
-                                  ]
-                                }
-                              ]
-                            },
-                            {
-                              "Fn::Select": [
-                                1,
-                                {
-                                  "Fn::Split": [
-                                    "||",
-                                    {
-                                      "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057"
-                                    }
-                                  ]
-                                }
-                              ]
-                            }
-                          ]
-                        ]
-                      }
-                    },
-                    "handler": "handler.handler",
-                    "role": {
-                      "Fn::GetAtt": [
-                        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-                        "Arn"
-                      ]
-                    },
-                    "runtime": "nodejs10.x",
-                    "timeout": 300
-                  }
-                }
+              "Repository": {
+                "id": "Repository",
+                "path": "LamStack/Lam-docker-image/Repository"
               }
             }
           },
@@ -915,34 +679,7 @@
                               {
                                 "Ref": "AWS::URLSuffix"
                               },
-                              "/",
-                              {
-                                "Fn::Select": [
-                                  0,
-                                  {
-                                    "Fn::Split": [
-                                      "@sha256:",
-                                      {
-                                        "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              },
-                              "@sha256:",
-                              {
-                                "Fn::Select": [
-                                  1,
-                                  {
-                                    "Fn::Split": [
-                                      "@sha256:",
-                                      {
-                                        "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                                      }
-                                    ]
-                                  }
-                                ]
-                              }
+                              "/aws-cdk/assets:b51247d917986f6243d91a88594cb76e1daed953f1b04a02e7352556c8840700"
                             ]
                           ]
                         },
@@ -987,6 +724,122 @@
               "container": {
                 "id": "container",
                 "path": "LamStack/Lam-container-taskdefinition/container"
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "LamStack/Lam-container-taskdefinition/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/Lam-container-taskdefinition/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "LamStack/Lam-container-taskdefinition/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "LamStack/Lam-container-taskdefinition/EventsRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/Lam-container-taskdefinition/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "LamStack/Lam-container-taskdefinition/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "LamStack/Lam-container-taskdefinition/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "ecs:RunTask",
+                                  "Condition": {
+                                    "ArnEquals": {
+                                      "ecs:cluster": {
+                                        "Fn::GetAtt": [
+                                          "Lamcluster6F22944D",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "Lamcontainertaskdefinition7A3E7FAA"
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "LAMExecutionRoleCC5F75DB",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "LAMtask87600138",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LamcontainertaskdefinitionEventsRoleDefaultPolicy2117F6D9",
+                            "roles": [
+                              {
+                                "Ref": "LamcontainertaskdefinitionEventsRoleCD612DCB"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           },
@@ -1071,6 +924,119 @@
                   "aws:cdk:cloudformation:props": {
                     "logGroupName": "LAM--farg-loggroup-",
                     "retentionInDays": 731
+                  }
+                }
+              }
+            }
+          },
+          "S3EndPoint": {
+            "id": "S3EndPoint",
+            "path": "LamStack/S3EndPoint",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/S3EndPoint/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                  "aws:cdk:cloudformation:props": {
+                    "serviceName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "com.amazonaws.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".s3"
+                        ]
+                      ]
+                    },
+                    "vpcId": {
+                      "Ref": "LamVPCFDE504D6"
+                    },
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:*",
+                          "Effect": "Allow",
+                          "Principal": "*",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "routeTableIds": [
+                      {
+                        "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+                      },
+                      {
+                        "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+                      }
+                    ],
+                    "vpcEndpointType": "Gateway"
+                  }
+                }
+              }
+            }
+          },
+          "LAM-Fargate-Trigger": {
+            "id": "LAM-Fargate-Trigger",
+            "path": "LamStack/LAM-Fargate-Trigger",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-Fargate-Trigger/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "cron(* 23 * * ? *)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "Lamcluster6F22944D",
+                            "Arn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "LamcontainertaskdefinitionEventsRoleCD612DCB",
+                            "Arn"
+                          ]
+                        },
+                        "ecsParameters": {
+                          "taskCount": 1,
+                          "taskDefinitionArn": {
+                            "Ref": "Lamcontainertaskdefinition7A3E7FAA"
+                          },
+                          "launchType": "FARGATE",
+                          "networkConfiguration": {
+                            "awsVpcConfiguration": {
+                              "subnets": [
+                                {
+                                  "Ref": "LamVPCPrivateSubnet1SubnetF5B3CFC5"
+                                },
+                                {
+                                  "Ref": "LamVPCPrivateSubnet2Subnet628C3AD4"
+                                }
+                              ],
+                              "assignPublicIp": "DISABLED",
+                              "securityGroups": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "LamcontainertaskdefinitionSecurityGroupE0735861",
+                                    "GroupId"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "input": "{}"
+                      }
+                    ]
                   }
                 }
               }

@@ -36,16 +36,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "LamStack/Lam-VPC/PublicSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet1"
           }
         ]
       },
@@ -158,16 +158,16 @@
         "MapPublicIpOnLaunch": true,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "LamStack/Lam-VPC/PublicSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Public"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Public"
+          },
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet2"
           }
         ]
       },
@@ -280,16 +280,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "LamStack/Lam-VPC/PrivateSubnet1"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PrivateSubnet1"
           }
         ]
       },
@@ -361,16 +361,16 @@
         "MapPublicIpOnLaunch": false,
         "Tags": [
           {
-            "Key": "Name",
-            "Value": "LamStack/Lam-VPC/PrivateSubnet2"
-          },
-          {
             "Key": "aws-cdk:subnet-name",
             "Value": "Private"
           },
           {
             "Key": "aws-cdk:subnet-type",
             "Value": "Private"
+          },
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PrivateSubnet2"
           }
         ]
       },
@@ -450,196 +450,6 @@
       },
       "Metadata": {
         "aws:cdk:path": "LamStack/Lam-VPC/VPCGW"
-      }
-    },
-    "LamdockerimageAdoptRepositoryC6F3E02B": {
-      "Type": "Custom::ECRAdoptedRepository",
-      "Properties": {
-        "ServiceToken": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9",
-            "Arn"
-          ]
-        },
-        "RepositoryName": {
-          "Fn::Select": [
-            0,
-            {
-              "Fn::Split": [
-                "@sha256:",
-                {
-                  "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                }
-              ]
-            }
-          ]
-        }
-      },
-      "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ],
-      "UpdateReplacePolicy": "Delete",
-      "DeletionPolicy": "Delete",
-      "Metadata": {
-        "aws:cdk:path": "LamStack/Lam-docker-image/AdoptRepository/Resource/Default"
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [
-            {
-              "Action": "sts:AssumeRole",
-              "Effect": "Allow",
-              "Principal": {
-                "Service": "lambda.amazonaws.com"
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "ManagedPolicyArns": [
-          {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-              ]
-            ]
-          }
-        ]
-      },
-      "Metadata": {
-        "aws:cdk:path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/Resource"
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C": {
-      "Type": "AWS::IAM::Policy",
-      "Properties": {
-        "PolicyDocument": {
-          "Statement": [
-            {
-              "Action": [
-                "ecr:GetRepositoryPolicy",
-                "ecr:SetRepositoryPolicy",
-                "ecr:DeleteRepository",
-                "ecr:ListImages",
-                "ecr:BatchDeleteImage"
-              ],
-              "Effect": "Allow",
-              "Resource": {
-                "Fn::Join": [
-                  "",
-                  [
-                    "arn:",
-                    {
-                      "Ref": "AWS::Partition"
-                    },
-                    ":ecr:",
-                    {
-                      "Ref": "AWS::Region"
-                    },
-                    ":",
-                    {
-                      "Ref": "AWS::AccountId"
-                    },
-                    ":repository/",
-                    {
-                      "Fn::Select": [
-                        0,
-                        {
-                          "Fn::Split": [
-                            "@sha256:",
-                            {
-                              "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-                  ]
-                ]
-              }
-            }
-          ],
-          "Version": "2012-10-17"
-        },
-        "PolicyName": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "Roles": [
-          {
-            "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-          }
-        ]
-      },
-      "Metadata": {
-        "aws:cdk:path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/DefaultPolicy/Resource"
-      }
-    },
-    "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c52BE89E9": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3Bucket7CBBD48C"
-          },
-          "S3Key": {
-            "Fn::Join": [
-              "",
-              [
-                {
-                  "Fn::Select": [
-                    0,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057"
-                        }
-                      ]
-                    }
-                  ]
-                },
-                {
-                  "Fn::Select": [
-                    1,
-                    {
-                      "Fn::Split": [
-                        "||",
-                        {
-                          "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057"
-                        }
-                      ]
-                    }
-                  ]
-                }
-              ]
-            ]
-          }
-        },
-        "Handler": "handler.handler",
-        "Role": {
-          "Fn::GetAtt": [
-            "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
-            "Arn"
-          ]
-        },
-        "Runtime": "nodejs10.x",
-        "Timeout": 300
-      },
-      "DependsOn": [
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
-        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
-      ],
-      "Metadata": {
-        "aws:cdk:path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Resource",
-        "aws:asset:path": "asset.a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7",
-        "aws:asset:property": "Code"
       }
     },
     "Lamcluster6F22944D": {
@@ -744,34 +554,7 @@
                   {
                     "Ref": "AWS::URLSuffix"
                   },
-                  "/",
-                  {
-                    "Fn::Select": [
-                      0,
-                      {
-                        "Fn::Split": [
-                          "@sha256:",
-                          {
-                            "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  "@sha256:",
-                  {
-                    "Fn::Select": [
-                      1,
-                      {
-                        "Fn::Split": [
-                          "@sha256:",
-                          {
-                            "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
-                          }
-                        ]
-                      }
-                    ]
-                  }
+                  "/aws-cdk/assets:b51247d917986f6243d91a88594cb76e1daed953f1b04a02e7352556c8840700"
                 ]
               ]
             },
@@ -813,6 +596,101 @@
       },
       "Metadata": {
         "aws:cdk:path": "LamStack/Lam-container-taskdefinition/Resource"
+      }
+    },
+    "LamcontainertaskdefinitionSecurityGroupE0735861": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "LamStack/Lam-container-taskdefinition/SecurityGroup",
+        "SecurityGroupEgress": [
+          {
+            "CidrIp": "0.0.0.0/0",
+            "Description": "Allow all outbound traffic by default",
+            "IpProtocol": "-1"
+          }
+        ],
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-container-taskdefinition/SecurityGroup/Resource"
+      }
+    },
+    "LamcontainertaskdefinitionEventsRoleCD612DCB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "events.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-container-taskdefinition/EventsRole/Resource"
+      }
+    },
+    "LamcontainertaskdefinitionEventsRoleDefaultPolicy2117F6D9": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "ecs:RunTask",
+              "Condition": {
+                "ArnEquals": {
+                  "ecs:cluster": {
+                    "Fn::GetAtt": [
+                      "Lamcluster6F22944D",
+                      "Arn"
+                    ]
+                  }
+                }
+              },
+              "Effect": "Allow",
+              "Resource": {
+                "Ref": "Lamcontainertaskdefinition7A3E7FAA"
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LAMExecutionRoleCC5F75DB",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": "iam:PassRole",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "LAMtask87600138",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LamcontainertaskdefinitionEventsRoleDefaultPolicy2117F6D9",
+        "Roles": [
+          {
+            "Ref": "LamcontainertaskdefinitionEventsRoleCD612DCB"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-container-taskdefinition/EventsRole/DefaultPolicy/Resource"
       }
     },
     "LAMContainertaskPolicy515F0CE3": {
@@ -881,24 +759,105 @@
       "Metadata": {
         "aws:cdk:path": "LamStack/LogGroup/Resource"
       }
-    }
-  },
-  "Parameters": {
-    "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670": {
-      "Type": "String",
-      "Description": "ECR repository name and tag for asset \"653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc\""
     },
-    "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3Bucket7CBBD48C": {
-      "Type": "String",
-      "Description": "S3 bucket for asset \"a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7\""
+    "S3EndPoint262616B9": {
+      "Type": "AWS::EC2::VPCEndpoint",
+      "Properties": {
+        "ServiceName": {
+          "Fn::Join": [
+            "",
+            [
+              "com.amazonaws.",
+              {
+                "Ref": "AWS::Region"
+              },
+              ".s3"
+            ]
+          ]
+        },
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Principal": "*",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "RouteTableIds": [
+          {
+            "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+          },
+          {
+            "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+          }
+        ],
+        "VpcEndpointType": "Gateway"
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/S3EndPoint/Resource"
+      }
     },
-    "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057": {
-      "Type": "String",
-      "Description": "S3 key for asset version \"a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7\""
-    },
-    "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7ArtifactHash3E217B68": {
-      "Type": "String",
-      "Description": "Artifact hash for asset \"a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7\""
+    "LAMFargateTriggerECE5DA27": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "cron(* 23 * * ? *)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "Lamcluster6F22944D",
+                "Arn"
+              ]
+            },
+            "EcsParameters": {
+              "LaunchType": "FARGATE",
+              "NetworkConfiguration": {
+                "AwsVpcConfiguration": {
+                  "AssignPublicIp": "DISABLED",
+                  "SecurityGroups": [
+                    {
+                      "Fn::GetAtt": [
+                        "LamcontainertaskdefinitionSecurityGroupE0735861",
+                        "GroupId"
+                      ]
+                    }
+                  ],
+                  "Subnets": [
+                    {
+                      "Ref": "LamVPCPrivateSubnet1SubnetF5B3CFC5"
+                    },
+                    {
+                      "Ref": "LamVPCPrivateSubnet2Subnet628C3AD4"
+                    }
+                  ]
+                }
+              },
+              "TaskCount": 1,
+              "TaskDefinitionArn": {
+                "Ref": "Lamcontainertaskdefinition7A3E7FAA"
+              }
+            },
+            "Id": "Target0",
+            "Input": "{}",
+            "RoleArn": {
+              "Fn::GetAtt": [
+                "LamcontainertaskdefinitionEventsRoleCD612DCB",
+                "Arn"
+              ]
+            }
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/LAM-Fargate-Trigger/Resource"
+      }
     }
   }
 }
