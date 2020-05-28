@@ -1,7 +1,7 @@
 FROM centos:7
 
 USER root
-RUN yum install epel-release curl lftp unzip gcc lftp nc -y
+RUN yum install epel-release curl lftp unzip gcc lftp nc openssh-server openssh-clients -y
 # Jos tehdaan s3 tiedostojen ja kyselyjen rajaus clientin paassa niin asenna jq
 # lukemaan json vastauksia
 RUN yum install jq -y
@@ -23,10 +23,10 @@ COPY . .
 
 # HPK csv-purkajan C kaannos
 RUN gcc hpkpurku.c -o hpkpurku;chmod 777 hpkpurku;mv hpkpurku /data/hpk/bin/
+# Avoin data siirretaan lftp clientin avulla, siirtoa ohjataan ao. tiedostolla
 RUN cp aineistotsync.lftp /data/hpk/bin/
 
-#EXPOSE 8080
-
-CMD ["./LAMdaily.sh"]
+# Kontin suoritus
+#CMD ["./LAMdaily.sh"]
 # Paikallista docker kehitysta varten pitaa kontin elossa... MUISTA POISTAA!
-#CMD tail -f /dev/null
+CMD tail -f /dev/null
