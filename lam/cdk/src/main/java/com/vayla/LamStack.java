@@ -58,7 +58,8 @@ public class LamStack extends Stack {
                 .roles(Arrays.asList(executionRole)).build();
         containerExecutionPolicy.addStatements(containerStatement);
 
-        final PolicyStatement containerTaskStatement = PolicyStatement.Builder.create().actions(Arrays.asList("s3:*"))
+        //TODO following is bad practice it should define S3 buckets it actually uses and what operations are needed instead of allowing all to all
+        final PolicyStatement containerTaskStatement = PolicyStatement.Builder.create().actions(Arrays.asList("s3:*")) 
                 .effect(Effect.ALLOW).resources(Arrays.asList("*")).build();
                 
         containerTaskPolicy.addStatements(containerTaskStatement);
