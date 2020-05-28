@@ -526,6 +526,555 @@
                 }
               }
             }
+          },
+          "Lam-docker-image": {
+            "id": "Lam-docker-image",
+            "path": "LamStack/Lam-docker-image",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "LamStack/Lam-docker-image/Staging"
+              },
+              "AdoptRepository": {
+                "id": "AdoptRepository",
+                "path": "LamStack/Lam-docker-image/AdoptRepository",
+                "children": {
+                  "Function": {
+                    "id": "Function",
+                    "path": "LamStack/Lam-docker-image/AdoptRepository/Function"
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/Lam-docker-image/AdoptRepository/Resource",
+                    "children": {
+                      "Default": {
+                        "id": "Default",
+                        "path": "LamStack/Lam-docker-image/AdoptRepository/Resource/Default"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "AssetParameters": {
+            "id": "AssetParameters",
+            "path": "LamStack/AssetParameters",
+            "children": {
+              "653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc": {
+                "id": "653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc",
+                "path": "LamStack/AssetParameters/653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc",
+                "children": {
+                  "ImageName": {
+                    "id": "ImageName",
+                    "path": "LamStack/AssetParameters/653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadc/ImageName"
+                  }
+                }
+              },
+              "a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7": {
+                "id": "a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7",
+                "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7",
+                "children": {
+                  "S3Bucket": {
+                    "id": "S3Bucket",
+                    "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7/S3Bucket"
+                  },
+                  "S3VersionKey": {
+                    "id": "S3VersionKey",
+                    "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7/S3VersionKey"
+                  },
+                  "ArtifactHash": {
+                    "id": "ArtifactHash",
+                    "path": "LamStack/AssetParameters/a65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7/ArtifactHash"
+                  }
+                }
+              }
+            }
+          },
+          "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c": {
+            "id": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c",
+            "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "ecr:GetRepositoryPolicy",
+                                    "ecr:SetRepositoryPolicy",
+                                    "ecr:DeleteRepository",
+                                    "ecr:ListImages",
+                                    "ecr:BatchDeleteImage"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":ecr:",
+                                        {
+                                          "Ref": "AWS::Region"
+                                        },
+                                        ":",
+                                        {
+                                          "Ref": "AWS::AccountId"
+                                        },
+                                        ":repository/",
+                                        {
+                                          "Fn::Select": [
+                                            0,
+                                            {
+                                              "Fn::Split": [
+                                                "@sha256:",
+                                                {
+                                                  "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleDefaultPolicy6BC8737C",
+                            "roles": [
+                              {
+                                "Ref": "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code/Stage"
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Code/AssetBucket"
+                  }
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62c/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": {
+                        "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3Bucket7CBBD48C"
+                      },
+                      "s3Key": {
+                        "Fn::Join": [
+                          "",
+                          [
+                            {
+                              "Fn::Select": [
+                                0,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057"
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Fn::Select": [
+                                1,
+                                {
+                                  "Fn::Split": [
+                                    "||",
+                                    {
+                                      "Ref": "AssetParametersa65ac4beaa2b5a7b20eebf3b7c5c1c886b71428afa377e02dab0d10ab3be57e7S3VersionKey87E3D057"
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        ]
+                      }
+                    },
+                    "handler": "handler.handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "AdoptEcrRepositorydbc60defc59544bcaa5c28c95d68f62cServiceRoleD788AA17",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "nodejs10.x",
+                    "timeout": 300
+                  }
+                }
+              }
+            }
+          },
+          "Lam-cluster": {
+            "id": "Lam-cluster",
+            "path": "LamStack/Lam-cluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/Lam-cluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {}
+                }
+              }
+            }
+          },
+          "LAM-ExecutionRole": {
+            "id": "LAM-ExecutionRole",
+            "path": "LamStack/LAM-ExecutionRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-ExecutionRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ecs-tasks.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "ExecutionRole"
+                  }
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "LamStack/LAM-ExecutionRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/LAM-ExecutionRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "LogGroupF5B46931",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "LAMExecutionRoleDefaultPolicy9CB29336",
+                        "roles": [
+                          {
+                            "Ref": "LAMExecutionRoleCC5F75DB"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LAM-task": {
+            "id": "LAM-task",
+            "path": "LamStack/LAM-task",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-task/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ecs-tasks.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "taskRole"
+                  }
+                }
+              }
+            }
+          },
+          "Lam-container-taskdefinition": {
+            "id": "Lam-container-taskdefinition",
+            "path": "LamStack/Lam-container-taskdefinition",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/Lam-container-taskdefinition/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "cpu": 256,
+                        "essential": true,
+                        "image": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ".dkr.ecr.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/",
+                              {
+                                "Fn::Select": [
+                                  0,
+                                  {
+                                    "Fn::Split": [
+                                      "@sha256:",
+                                      {
+                                        "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              "@sha256:",
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "@sha256:",
+                                      {
+                                        "Ref": "AssetParameters653cb318f98dd718bbe67888eb05658637714d03b5ca46356cde84b7db1cbadcImageName8F69E670"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        },
+                        "memoryReservation": 512,
+                        "name": "container",
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "LogGroupF5B46931"
+                            },
+                            "awslogs-stream-prefix": "lam-fargate-logs",
+                            "awslogs-region": {
+                              "Ref": "AWS::Region"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "cpu": "512",
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "LAMExecutionRoleCC5F75DB",
+                        "Arn"
+                      ]
+                    },
+                    "family": "LamStackLamcontainertaskdefinition3CA41CE5",
+                    "memory": "1024",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "LAMtask87600138",
+                        "Arn"
+                      ]
+                    }
+                  }
+                }
+              },
+              "container": {
+                "id": "container",
+                "path": "LamStack/Lam-container-taskdefinition/container"
+              }
+            }
+          },
+          "LAM-Container-taskPolicy": {
+            "id": "LAM-Container-taskPolicy",
+            "path": "LamStack/LAM-Container-taskPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-Container-taskPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:*",
+                          "Effect": "Allow",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "LAMContainertaskPolicy515F0CE3",
+                    "roles": [
+                      {
+                        "Ref": "LAMtask87600138"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "LAM-Container-ExecutionPolicy": {
+            "id": "LAM-Container-ExecutionPolicy",
+            "path": "LamStack/LAM-Container-ExecutionPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-Container-ExecutionPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "ecr:GetAuthorizationToken",
+                            "ecr:BatchCheckLayerAvailability",
+                            "ecr:GetDownloadUrlForLayer",
+                            "ecr:BatchGetImage",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "LAMContainerExecutionPolicyB66DB0A9",
+                    "roles": [
+                      {
+                        "Ref": "LAMExecutionRoleCC5F75DB"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "LamStack/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "LAM--farg-loggroup-",
+                    "retentionInDays": 731
+                  }
+                }
+              }
+            }
           }
         }
       }
