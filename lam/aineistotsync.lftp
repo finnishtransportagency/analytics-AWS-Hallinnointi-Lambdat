@@ -1,0 +1,5 @@
+set net:max-retries 3
+set net:reconnect-interval-base 5
+open -u lam-rawdata, sftp://aineistot.vayla.fi
+cd upload
+ls
