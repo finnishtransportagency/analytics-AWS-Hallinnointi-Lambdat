@@ -8,6 +8,9 @@ import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.transfer.*;
 import software.amazon.awscdk.services.transfer.CfnServer.EndpointDetailsProperty;
+import software.amazon.awscdk.services.ec2.*;
+import software.amazon.awscdk.services.ecs.*;
+import software.amazon.awscdk.services.ecs.patterns.*;
 
 public class LamStack extends Stack {
     public LamStack(final Construct scope, final String id) {
@@ -19,6 +22,7 @@ public class LamStack extends Stack {
 
 
         Vpc vpc = Vpc.Builder.create(this, "Lam-VPC").maxAzs(2).build();
+
 
 /*
         String[] subnet;

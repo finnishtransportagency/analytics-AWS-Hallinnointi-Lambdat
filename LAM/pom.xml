@@ -49,6 +49,17 @@
 
         <dependency>
             <groupId>software.amazon.awscdk</groupId>
+            <artifactId>ecs</artifactId>
+            <version>1.20.0</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
+            <artifactId>ecs-patterns</artifactId>
+            <version>1.20.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.awscdk</groupId>
             <artifactId>transfer</artifactId>
             <version>1.20.0</version>
         </dependency>
