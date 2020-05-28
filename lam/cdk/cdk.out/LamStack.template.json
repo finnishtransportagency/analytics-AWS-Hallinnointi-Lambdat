@@ -1,0 +1,456 @@
+{
+  "Resources": {
+    "LamVPCFDE504D6": {
+      "Type": "AWS::EC2::VPC",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": true,
+        "EnableDnsSupport": true,
+        "InstanceTenancy": "default",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/Resource"
+      }
+    },
+    "LamVPCPublicSubnet1Subnet6FA2A8F9": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.0.0/18",
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet1/Subnet"
+      }
+    },
+    "LamVPCPublicSubnet1RouteTable3DC5806A": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet1/RouteTable"
+      }
+    },
+    "LamVPCPublicSubnet1RouteTableAssociationCBA689D6": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPublicSubnet1RouteTable3DC5806A"
+        },
+        "SubnetId": {
+          "Ref": "LamVPCPublicSubnet1Subnet6FA2A8F9"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet1/RouteTableAssociation"
+      }
+    },
+    "LamVPCPublicSubnet1DefaultRoute7F048F36": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPublicSubnet1RouteTable3DC5806A"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "LamVPCIGW6412423A"
+        }
+      },
+      "DependsOn": [
+        "LamVPCVPCGWDB7CB43B"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet1/DefaultRoute"
+      }
+    },
+    "LamVPCPublicSubnet1EIPB4B35331": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet1/EIP"
+      }
+    },
+    "LamVPCPublicSubnet1NATGatewayDCA7F7D2": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "LamVPCPublicSubnet1EIPB4B35331",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "LamVPCPublicSubnet1Subnet6FA2A8F9"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet1/NATGateway"
+      }
+    },
+    "LamVPCPublicSubnet2Subnet2B371CD0": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.64.0/18",
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": true,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Public"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Public"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet2/Subnet"
+      }
+    },
+    "LamVPCPublicSubnet2RouteTableDFA913DD": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet2/RouteTable"
+      }
+    },
+    "LamVPCPublicSubnet2RouteTableAssociationA393DE0E": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPublicSubnet2RouteTableDFA913DD"
+        },
+        "SubnetId": {
+          "Ref": "LamVPCPublicSubnet2Subnet2B371CD0"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet2/RouteTableAssociation"
+      }
+    },
+    "LamVPCPublicSubnet2DefaultRoute1444FB64": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPublicSubnet2RouteTableDFA913DD"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "GatewayId": {
+          "Ref": "LamVPCIGW6412423A"
+        }
+      },
+      "DependsOn": [
+        "LamVPCVPCGWDB7CB43B"
+      ],
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet2/DefaultRoute"
+      }
+    },
+    "LamVPCPublicSubnet2EIPF35D6E87": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "Domain": "vpc",
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet2/EIP"
+      }
+    },
+    "LamVPCPublicSubnet2NATGateway07BD2D41": {
+      "Type": "AWS::EC2::NatGateway",
+      "Properties": {
+        "AllocationId": {
+          "Fn::GetAtt": [
+            "LamVPCPublicSubnet2EIPF35D6E87",
+            "AllocationId"
+          ]
+        },
+        "SubnetId": {
+          "Ref": "LamVPCPublicSubnet2Subnet2B371CD0"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PublicSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PublicSubnet2/NATGateway"
+      }
+    },
+    "LamVPCPrivateSubnet1SubnetF5B3CFC5": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.128.0/18",
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            0,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PrivateSubnet1"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet1/Subnet"
+      }
+    },
+    "LamVPCPrivateSubnet1RouteTableC6DF4940": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PrivateSubnet1"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet1/RouteTable"
+      }
+    },
+    "LamVPCPrivateSubnet1RouteTableAssociation69CD0C49": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+        },
+        "SubnetId": {
+          "Ref": "LamVPCPrivateSubnet1SubnetF5B3CFC5"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet1/RouteTableAssociation"
+      }
+    },
+    "LamVPCPrivateSubnet1DefaultRoute2E44AA11": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "LamVPCPublicSubnet1NATGatewayDCA7F7D2"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet1/DefaultRoute"
+      }
+    },
+    "LamVPCPrivateSubnet2Subnet628C3AD4": {
+      "Type": "AWS::EC2::Subnet",
+      "Properties": {
+        "CidrBlock": "10.0.192.0/18",
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "AvailabilityZone": {
+          "Fn::Select": [
+            1,
+            {
+              "Fn::GetAZs": ""
+            }
+          ]
+        },
+        "MapPublicIpOnLaunch": false,
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PrivateSubnet2"
+          },
+          {
+            "Key": "aws-cdk:subnet-name",
+            "Value": "Private"
+          },
+          {
+            "Key": "aws-cdk:subnet-type",
+            "Value": "Private"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet2/Subnet"
+      }
+    },
+    "LamVPCPrivateSubnet2RouteTable08DB5AF7": {
+      "Type": "AWS::EC2::RouteTable",
+      "Properties": {
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC/PrivateSubnet2"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet2/RouteTable"
+      }
+    },
+    "LamVPCPrivateSubnet2RouteTableAssociation7E790895": {
+      "Type": "AWS::EC2::SubnetRouteTableAssociation",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+        },
+        "SubnetId": {
+          "Ref": "LamVPCPrivateSubnet2Subnet628C3AD4"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet2/RouteTableAssociation"
+      }
+    },
+    "LamVPCPrivateSubnet2DefaultRoute761CC5DD": {
+      "Type": "AWS::EC2::Route",
+      "Properties": {
+        "RouteTableId": {
+          "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+        },
+        "DestinationCidrBlock": "0.0.0.0/0",
+        "NatGatewayId": {
+          "Ref": "LamVPCPublicSubnet2NATGateway07BD2D41"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/PrivateSubnet2/DefaultRoute"
+      }
+    },
+    "LamVPCIGW6412423A": {
+      "Type": "AWS::EC2::InternetGateway",
+      "Properties": {
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": "LamStack/Lam-VPC"
+          }
+        ]
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/IGW"
+      }
+    },
+    "LamVPCVPCGWDB7CB43B": {
+      "Type": "AWS::EC2::VPCGatewayAttachment",
+      "Properties": {
+        "VpcId": {
+          "Ref": "LamVPCFDE504D6"
+        },
+        "InternetGatewayId": {
+          "Ref": "LamVPCIGW6412423A"
+        }
+      },
+      "Metadata": {
+        "aws:cdk:path": "LamStack/Lam-VPC/VPCGW"
+      }
+    }
+  }
+}

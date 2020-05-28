@@ -1,0 +1,568 @@
+{
+  "version": "1.16.0",
+  "artifacts": {
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    },
+    "LamStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "LamStack.template.json"
+      },
+      "metadata": {
+        "/LamStack/Lam-VPC/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCFDE504D6",
+            "trace": [
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:266:25)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet1Subnet6FA2A8F9",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:547:24)",
+              "new PublicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:697:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:476:42)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet1RouteTable3DC5806A",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:562:23)",
+              "new PublicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:697:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:476:42)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet1RouteTableAssociationCBA689D6",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:567:9)",
+              "new PublicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:697:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:476:42)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet1DefaultRoute7F048F36",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:587:23)",
+              "Vpc.publicSubnets.forEach.publicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:297:30)",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:296:32)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet1/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet1EIPB4B35331",
+            "trace": [
+              "PublicSubnet.addNatGateway (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:708:27)",
+              "NatGateway.configureNat (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:52:33)",
+              "Vpc.createNatGateways (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:434:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:302:22)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet1/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet1NATGatewayDCA7F7D2",
+            "trace": [
+              "PublicSubnet.addNatGateway (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:706:21)",
+              "NatGateway.configureNat (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:52:33)",
+              "Vpc.createNatGateways (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:434:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:302:22)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet2Subnet2B371CD0",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:547:24)",
+              "new PublicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:697:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:476:42)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet2RouteTableDFA913DD",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:562:23)",
+              "new PublicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:697:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:476:42)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet2RouteTableAssociationA393DE0E",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:567:9)",
+              "new PublicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:697:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:476:42)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet2DefaultRoute1444FB64",
+            "trace": [
+              "PublicSubnet.addDefaultInternetRoute (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:587:23)",
+              "Vpc.publicSubnets.forEach.publicSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:297:30)",
+              "Array.forEach (<anonymous>)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:296:32)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet2/EIP": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet2EIPF35D6E87",
+            "trace": [
+              "PublicSubnet.addNatGateway (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:708:27)",
+              "NatGateway.configureNat (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:52:33)",
+              "Vpc.createNatGateways (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:434:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:302:22)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PublicSubnet2/NATGateway": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPublicSubnet2NATGateway07BD2D41",
+            "trace": [
+              "PublicSubnet.addNatGateway (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:706:21)",
+              "NatGateway.configureNat (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:52:33)",
+              "Vpc.createNatGateways (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:434:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:302:22)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet1/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet1SubnetF5B3CFC5",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:547:24)",
+              "new PrivateSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:724:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:481:43)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet1/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet1RouteTableC6DF4940",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:562:23)",
+              "new PrivateSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:724:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:481:43)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet1/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet1RouteTableAssociation69CD0C49",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:567:9)",
+              "new PrivateSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:724:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:481:43)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet1/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet1DefaultRoute2E44AA11",
+            "trace": [
+              "PrivateSubnet.addRoute (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:628:23)",
+              "NatGateway.configureSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:63:16)",
+              "NatGateway.configureNat (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:57:18)",
+              "Vpc.createNatGateways (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:434:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:302:22)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet2/Subnet": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet2Subnet628C3AD4",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:547:24)",
+              "new PrivateSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:724:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:481:43)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet2/RouteTable": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet2RouteTable08DB5AF7",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:562:23)",
+              "new PrivateSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:724:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:481:43)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet2/RouteTableAssociation": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet2RouteTableAssociation7E790895",
+            "trace": [
+              "new Subnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:567:9)",
+              "new PrivateSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:724:9)",
+              "availabilityZones.forEach (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:481:43)",
+              "Array.forEach (<anonymous>)",
+              "Vpc.createSubnetResources (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:460:32)",
+              "Vpc.createSubnets (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:456:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:286:14)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/PrivateSubnet2/DefaultRoute": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCPrivateSubnet2DefaultRoute761CC5DD",
+            "trace": [
+              "PrivateSubnet.addRoute (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:628:23)",
+              "NatGateway.configureSubnet (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:63:16)",
+              "NatGateway.configureNat (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/nat.js:57:18)",
+              "Vpc.createNatGateways (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:434:18)",
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:302:22)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/IGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCIGW6412423A",
+            "trace": [
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:290:25)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ],
+        "/LamStack/Lam-VPC/VPCGW": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "LamVPCVPCGWDB7CB43B",
+            "trace": [
+              "new Vpc (/tmp/jsii-kernel-V1Rkse/node_modules/@aws-cdk/aws-ec2/lib/vpc.js:292:25)",
+              "obj._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:49)",
+              "Kernel._wrapSandboxCode (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:8222:20)",
+              "Kernel._create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7762:26)",
+              "Kernel.create (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7509:21)",
+              "KernelHost.processRequest (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7296:28)",
+              "KernelHost.run (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7236:14)",
+              "Immediate.setImmediate [as _onImmediate] (/tmp/jsii-java-runtime9471032724966822080/jsii-runtime.js:7239:37)",
+              "runCallback (timers.js:696:18)",
+              "tryOnImmediate (timers.js:667:5)",
+              "processImmediate (timers.js:649:5)"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "runtime": {
+    "libraries": {
+      "@aws-cdk/cx-api": "1.20.0",
+      "@aws-cdk/core": "1.20.0",
+      "@aws-cdk/region-info": "1.20.0",
+      "@aws-cdk/aws-iam": "1.20.0",
+      "@aws-cdk/aws-cloudwatch": "1.20.0",
+      "@aws-cdk/aws-kms": "1.20.0",
+      "@aws-cdk/aws-ssm": "1.20.0",
+      "@aws-cdk/aws-ec2": "1.20.0",
+      "jsii-runtime": "Java/11.0.6"
+    }
+  }
+}
