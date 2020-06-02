@@ -1,0 +1,1049 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree"
+      },
+      "LamStack": {
+        "id": "LamStack",
+        "path": "LamStack",
+        "children": {
+          "Lam-VPC": {
+            "id": "Lam-VPC",
+            "path": "LamStack/Lam-VPC",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/Lam-VPC/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPC",
+                  "aws:cdk:cloudformation:props": {
+                    "cidrBlock": "10.0.0.0/16",
+                    "enableDnsHostnames": true,
+                    "enableDnsSupport": true,
+                    "instanceTenancy": "default",
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "LamStack/Lam-VPC"
+                      }
+                    ]
+                  }
+                }
+              },
+              "PublicSubnet1": {
+                "id": "PublicSubnet1",
+                "path": "LamStack/Lam-VPC/PublicSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.0.0.0/18",
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/Acl"
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPublicSubnet1RouteTable3DC5806A"
+                        },
+                        "subnetId": {
+                          "Ref": "LamVPCPublicSubnet1Subnet6FA2A8F9"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPublicSubnet1RouteTable3DC5806A"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "LamVPCIGW6412423A"
+                        }
+                      }
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "LamStack/Lam-VPC/PublicSubnet1/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "LamVPCPublicSubnet1EIPB4B35331",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "LamVPCPublicSubnet1Subnet6FA2A8F9"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet1"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "PublicSubnet2": {
+                "id": "PublicSubnet2",
+                "path": "LamStack/Lam-VPC/PublicSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.0.64.0/18",
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": true,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Public"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/Acl"
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPublicSubnet2RouteTableDFA913DD"
+                        },
+                        "subnetId": {
+                          "Ref": "LamVPCPublicSubnet2Subnet2B371CD0"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPublicSubnet2RouteTableDFA913DD"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "gatewayId": {
+                          "Ref": "LamVPCIGW6412423A"
+                        }
+                      }
+                    }
+                  },
+                  "EIP": {
+                    "id": "EIP",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/EIP",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::EIP",
+                      "aws:cdk:cloudformation:props": {
+                        "domain": "vpc",
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "NATGateway": {
+                    "id": "NATGateway",
+                    "path": "LamStack/Lam-VPC/PublicSubnet2/NATGateway",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::NatGateway",
+                      "aws:cdk:cloudformation:props": {
+                        "allocationId": {
+                          "Fn::GetAtt": [
+                            "LamVPCPublicSubnet2EIPF35D6E87",
+                            "AllocationId"
+                          ]
+                        },
+                        "subnetId": {
+                          "Ref": "LamVPCPublicSubnet2Subnet2B371CD0"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PublicSubnet2"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              },
+              "PrivateSubnet1": {
+                "id": "PrivateSubnet1",
+                "path": "LamStack/Lam-VPC/PrivateSubnet1",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet1/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.0.128.0/18",
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            0,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet1/Acl"
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet1/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PrivateSubnet1"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet1/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+                        },
+                        "subnetId": {
+                          "Ref": "LamVPCPrivateSubnet1SubnetF5B3CFC5"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet1/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "LamVPCPublicSubnet1NATGatewayDCA7F7D2"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "PrivateSubnet2": {
+                "id": "PrivateSubnet2",
+                "path": "LamStack/Lam-VPC/PrivateSubnet2",
+                "children": {
+                  "Subnet": {
+                    "id": "Subnet",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet2/Subnet",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Subnet",
+                      "aws:cdk:cloudformation:props": {
+                        "cidrBlock": "10.0.192.0/18",
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "availabilityZone": {
+                          "Fn::Select": [
+                            1,
+                            {
+                              "Fn::GetAZs": ""
+                            }
+                          ]
+                        },
+                        "mapPublicIpOnLaunch": false,
+                        "tags": [
+                          {
+                            "key": "aws-cdk:subnet-name",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "aws-cdk:subnet-type",
+                            "value": "Private"
+                          },
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "Acl": {
+                    "id": "Acl",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet2/Acl"
+                  },
+                  "RouteTable": {
+                    "id": "RouteTable",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet2/RouteTable",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::RouteTable",
+                      "aws:cdk:cloudformation:props": {
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        },
+                        "tags": [
+                          {
+                            "key": "Name",
+                            "value": "LamStack/Lam-VPC/PrivateSubnet2"
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "RouteTableAssociation": {
+                    "id": "RouteTableAssociation",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet2/RouteTableAssociation",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SubnetRouteTableAssociation",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+                        },
+                        "subnetId": {
+                          "Ref": "LamVPCPrivateSubnet2Subnet628C3AD4"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultRoute": {
+                    "id": "DefaultRoute",
+                    "path": "LamStack/Lam-VPC/PrivateSubnet2/DefaultRoute",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::Route",
+                      "aws:cdk:cloudformation:props": {
+                        "routeTableId": {
+                          "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+                        },
+                        "destinationCidrBlock": "0.0.0.0/0",
+                        "natGatewayId": {
+                          "Ref": "LamVPCPublicSubnet2NATGateway07BD2D41"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "IGW": {
+                "id": "IGW",
+                "path": "LamStack/Lam-VPC/IGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::InternetGateway",
+                  "aws:cdk:cloudformation:props": {
+                    "tags": [
+                      {
+                        "key": "Name",
+                        "value": "LamStack/Lam-VPC"
+                      }
+                    ]
+                  }
+                }
+              },
+              "VPCGW": {
+                "id": "VPCGW",
+                "path": "LamStack/Lam-VPC/VPCGW",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCGatewayAttachment",
+                  "aws:cdk:cloudformation:props": {
+                    "vpcId": {
+                      "Ref": "LamVPCFDE504D6"
+                    },
+                    "internetGatewayId": {
+                      "Ref": "LamVPCIGW6412423A"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "Lam-docker-image": {
+            "id": "Lam-docker-image",
+            "path": "LamStack/Lam-docker-image",
+            "children": {
+              "Staging": {
+                "id": "Staging",
+                "path": "LamStack/Lam-docker-image/Staging"
+              },
+              "Repository": {
+                "id": "Repository",
+                "path": "LamStack/Lam-docker-image/Repository"
+              }
+            }
+          },
+          "Lam-cluster": {
+            "id": "Lam-cluster",
+            "path": "LamStack/Lam-cluster",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/Lam-cluster/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::Cluster",
+                  "aws:cdk:cloudformation:props": {}
+                }
+              }
+            }
+          },
+          "LAM-ExecutionRole": {
+            "id": "LAM-ExecutionRole",
+            "path": "LamStack/LAM-ExecutionRole",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-ExecutionRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ecs-tasks.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "ExecutionRole"
+                  }
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "LamStack/LAM-ExecutionRole/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/LAM-ExecutionRole/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "LogGroupF5B46931",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "LAMExecutionRoleDefaultPolicy9CB29336",
+                        "roles": [
+                          {
+                            "Ref": "LAMExecutionRoleCC5F75DB"
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LAM-task": {
+            "id": "LAM-task",
+            "path": "LamStack/LAM-task",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-task/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "ecs-tasks.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "roleName": "taskRole"
+                  }
+                }
+              }
+            }
+          },
+          "Lam-container-taskdefinition": {
+            "id": "Lam-container-taskdefinition",
+            "path": "LamStack/Lam-container-taskdefinition",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/Lam-container-taskdefinition/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ECS::TaskDefinition",
+                  "aws:cdk:cloudformation:props": {
+                    "containerDefinitions": [
+                      {
+                        "cpu": 256,
+                        "essential": true,
+                        "image": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ".dkr.ecr.",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ".",
+                              {
+                                "Ref": "AWS::URLSuffix"
+                              },
+                              "/aws-cdk/assets:b51247d917986f6243d91a88594cb76e1daed953f1b04a02e7352556c8840700"
+                            ]
+                          ]
+                        },
+                        "memoryReservation": 512,
+                        "name": "container",
+                        "logConfiguration": {
+                          "logDriver": "awslogs",
+                          "options": {
+                            "awslogs-group": {
+                              "Ref": "LogGroupF5B46931"
+                            },
+                            "awslogs-stream-prefix": "lam-fargate-logs",
+                            "awslogs-region": {
+                              "Ref": "AWS::Region"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "cpu": "512",
+                    "executionRoleArn": {
+                      "Fn::GetAtt": [
+                        "LAMExecutionRoleCC5F75DB",
+                        "Arn"
+                      ]
+                    },
+                    "family": "LamStackLamcontainertaskdefinition3CA41CE5",
+                    "memory": "1024",
+                    "networkMode": "awsvpc",
+                    "requiresCompatibilities": [
+                      "FARGATE"
+                    ],
+                    "taskRoleArn": {
+                      "Fn::GetAtt": [
+                        "LAMtask87600138",
+                        "Arn"
+                      ]
+                    }
+                  }
+                }
+              },
+              "container": {
+                "id": "container",
+                "path": "LamStack/Lam-container-taskdefinition/container"
+              },
+              "SecurityGroup": {
+                "id": "SecurityGroup",
+                "path": "LamStack/Lam-container-taskdefinition/SecurityGroup",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/Lam-container-taskdefinition/SecurityGroup/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::EC2::SecurityGroup",
+                      "aws:cdk:cloudformation:props": {
+                        "groupDescription": "LamStack/Lam-container-taskdefinition/SecurityGroup",
+                        "securityGroupEgress": [
+                          {
+                            "cidrIp": "0.0.0.0/0",
+                            "description": "Allow all outbound traffic by default",
+                            "ipProtocol": "-1"
+                          }
+                        ],
+                        "vpcId": {
+                          "Ref": "LamVPCFDE504D6"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "EventsRole": {
+                "id": "EventsRole",
+                "path": "LamStack/Lam-container-taskdefinition/EventsRole",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "LamStack/Lam-container-taskdefinition/EventsRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "events.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "LamStack/Lam-container-taskdefinition/EventsRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "LamStack/Lam-container-taskdefinition/EventsRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "ecs:RunTask",
+                                  "Condition": {
+                                    "ArnEquals": {
+                                      "ecs:cluster": {
+                                        "Fn::GetAtt": [
+                                          "Lamcluster6F22944D",
+                                          "Arn"
+                                        ]
+                                      }
+                                    }
+                                  },
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Ref": "Lamcontainertaskdefinition7A3E7FAA"
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "LAMExecutionRoleCC5F75DB",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": "iam:PassRole",
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "LAMtask87600138",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "LamcontainertaskdefinitionEventsRoleDefaultPolicy2117F6D9",
+                            "roles": [
+                              {
+                                "Ref": "LamcontainertaskdefinitionEventsRoleCD612DCB"
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "LAM-Container-taskPolicy": {
+            "id": "LAM-Container-taskPolicy",
+            "path": "LamStack/LAM-Container-taskPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-Container-taskPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:*",
+                          "Effect": "Allow",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "LAMContainertaskPolicy515F0CE3",
+                    "roles": [
+                      {
+                        "Ref": "LAMtask87600138"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "LAM-Container-ExecutionPolicy": {
+            "id": "LAM-Container-ExecutionPolicy",
+            "path": "LamStack/LAM-Container-ExecutionPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-Container-ExecutionPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "ecr:GetAuthorizationToken",
+                            "ecr:BatchCheckLayerAvailability",
+                            "ecr:GetDownloadUrlForLayer",
+                            "ecr:BatchGetImage",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "LAMContainerExecutionPolicyB66DB0A9",
+                    "roles": [
+                      {
+                        "Ref": "LAMExecutionRoleCC5F75DB"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "LogGroup": {
+            "id": "LogGroup",
+            "path": "LamStack/LogGroup",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LogGroup/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "LAM--farg-loggroup-",
+                    "retentionInDays": 731
+                  }
+                }
+              }
+            }
+          },
+          "S3EndPoint": {
+            "id": "S3EndPoint",
+            "path": "LamStack/S3EndPoint",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/S3EndPoint/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::EC2::VPCEndpoint",
+                  "aws:cdk:cloudformation:props": {
+                    "serviceName": {
+                      "Fn::Join": [
+                        "",
+                        [
+                          "com.amazonaws.",
+                          {
+                            "Ref": "AWS::Region"
+                          },
+                          ".s3"
+                        ]
+                      ]
+                    },
+                    "vpcId": {
+                      "Ref": "LamVPCFDE504D6"
+                    },
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "s3:*",
+                          "Effect": "Allow",
+                          "Principal": "*",
+                          "Resource": "*"
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "routeTableIds": [
+                      {
+                        "Ref": "LamVPCPrivateSubnet1RouteTableC6DF4940"
+                      },
+                      {
+                        "Ref": "LamVPCPrivateSubnet2RouteTable08DB5AF7"
+                      }
+                    ],
+                    "vpcEndpointType": "Gateway"
+                  }
+                }
+              }
+            }
+          },
+          "LAM-Fargate-Trigger": {
+            "id": "LAM-Fargate-Trigger",
+            "path": "LamStack/LAM-Fargate-Trigger",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "LamStack/LAM-Fargate-Trigger/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Events::Rule",
+                  "aws:cdk:cloudformation:props": {
+                    "scheduleExpression": "cron(* 23 * * ? *)",
+                    "state": "ENABLED",
+                    "targets": [
+                      {
+                        "id": "Target0",
+                        "arn": {
+                          "Fn::GetAtt": [
+                            "Lamcluster6F22944D",
+                            "Arn"
+                          ]
+                        },
+                        "roleArn": {
+                          "Fn::GetAtt": [
+                            "LamcontainertaskdefinitionEventsRoleCD612DCB",
+                            "Arn"
+                          ]
+                        },
+                        "ecsParameters": {
+                          "taskCount": 1,
+                          "taskDefinitionArn": {
+                            "Ref": "Lamcontainertaskdefinition7A3E7FAA"
+                          },
+                          "launchType": "FARGATE",
+                          "networkConfiguration": {
+                            "awsVpcConfiguration": {
+                              "subnets": [
+                                {
+                                  "Ref": "LamVPCPrivateSubnet1SubnetF5B3CFC5"
+                                },
+                                {
+                                  "Ref": "LamVPCPrivateSubnet2Subnet628C3AD4"
+                                }
+                              ],
+                              "assignPublicIp": "DISABLED",
+                              "securityGroups": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "LamcontainertaskdefinitionSecurityGroupE0735861",
+                                    "GroupId"
+                                  ]
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        "input": "{}"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
