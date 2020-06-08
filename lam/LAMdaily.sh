@@ -1,10 +1,10 @@
 #!/bin/sh 
-
+ymparisto=prod #test tai prod
 #AWS asetukset synkronointivarten
 profiili=default
-s3data=s3://vayla-lam-hpk-in/data/hpk/sonjain # mista haetaan purettava data, ennen tuupattu purkajan palvelimelle suoraan
-s3bucketti=s3://lam-data-dummy/
-#s3bucketti=s3://vayla-lamdata/ #mihin S3 buckettiin  ja rakenteeseen synkronointitehdään   esim s3://<s3-bucketti>/<kansio>/<alikansio>
+s3lahdebucket=s3://vayla-lam-data
+s3lahde=s3://vayla-lam-data/$ymparisto/sonja # mista haetaan purettava data, ennen tuupattu purkajan palvelimelle suoraan
+s3kohde=s3://vayla-lam-data/$ymparisto/snowpipe/ #mihin S3 buckettiin  ja rakenteeseen synkronointitehdään   esim s3://<s3-bucketti>/<kansio>/<alikansio>
 
 base=/data/hpk
 hpkpurku=$base/bin/hpkpurku
@@ -15,13 +15,13 @@ vuosi_uusi='2020'
 jako_paiva='350' 	#paivanumero jota suuremmat ovat vanhaa vuott
 		        #toimii vain jos vuosi_vanha on asetettu 
 alueet='01 02 03 04 08 09 10 12 14'
-sonja_in=/data/hpk/sonjain
+sonja_in=/data/hpk/sonjain #purkaja-palvelimen, eli nyk. docker koneen, sisainen kansiorakenne - sailytetty vastaavana, kuin vanhassa
 
 echo `date +'%d.%m.%Y %H:%M:%S'` LAMdaily ajo alkaa 
 cd $base
 
-echo AWS testi
-echo `aws s3 ls`
+echo AWS s3 oikeudet testi
+echo `aws s3 ls $s3lahdebucket/`
 
 #echo Levytila
 #echo `df -hv`
@@ -33,7 +33,8 @@ echo `aws s3 ls`
 # ja sitten parsinta jq:lla (https://stedolan.github.io/jq/tutorial/) esim. jq .[].Key
 eiliset=$(date -d "-1 days" +%Y-%m-%d)
 echo Haettavien tiedostojen pvm: $eiliset
-filelist=$(aws s3api list-objects --bucket vayla-lam-hpk-in --query 'Contents[?LastModified>=`'$eiliset'`][].{Key: Key}' | jq .[].Key | sed 's/"//g') 
+# TODO: bucket ja prefix muuttjista
+filelist=$(aws s3api list-objects --bucket vayla-lam-data --prefix prod/sonja/ --query 'Contents[?LastModified>=`'$eiliset'`][].{Key: Key}' | jq .[].Key | sed 's/"//g') 
 echo S3 tiedostot: $filelist
 
 # Siirrytaan tyokansion juurihakemistoon, niin etta
@@ -42,7 +43,7 @@ cd $sonja_in
 for file in $filelist;
 do
 	echo Download file $file
-	aws s3 cp s3://vayla-lam-hpk-in/$file .
+	aws s3 cp $s3lahdebucket/$file .
 done
 # Siirretaan tarvittaessa kaikki varmasti juurihakemistoon
 # find $sonja_in -name 'hpk*' | xargs -I {} mv {} $sonja_in
@@ -109,18 +110,17 @@ done
 # Lisäksi määritelty että ämpärin omistajalla on täydet oikeudet tiedostoihin vaikkei se periaatteessa ole välttämätön tässä tapauksessa
 echo Synkronoidaan datat AWS:n S3:n kanssa 
 echo `find $ybase -name '*.csv'`
-aws s3 sync $ybase $s3bucketti --exclude "*" --include "*.csv" #--only-show-errors &  #--profile $profiili --acl bucket-owner-full-control 
+aws s3 sync $ybase $s3kohde --exclude "*" --include "*.csv" #--only-show-errors &  #--profile $profiili --acl bucket-owner-full-control 
 
 echo Testing connection to aineistot.vayla.fi
 echo `nc -zv aineistot.vayla.fi 22`
 
 echo `date +'%d.%m.%Y %H:%M:%S'` Siirretään datat julkiselle puolelle
-cd $ybase
+cd $ybase #siirrytaan palvelimen sisainen "LAM"-kansioon, jonka alla puretut tiedostot omissa vuosi ja alue kansioissaan
 for vuosi in $vuodet;
 do
 	sed -e s/vuosi/$vuosi/g /data/hpk/bin/aineistotsync.lftp > /data/hpk/bin/aineistotsynccur.lftp 
 	lftp -f /data/hpk/bin/aineistotsynccur.lftp
-#	#rsync -r --exclude-from ./lamexclude.txt $vuosi/ lam-rawdata@livialk01n1.vally.local:/data2/users/lam-rawdata/upload/$vuosi
 done
 
 echo `date +'%d.%m.%Y %H:%M:%S'` LAMdaily ajo päättyi

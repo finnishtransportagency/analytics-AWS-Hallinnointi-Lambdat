@@ -99,7 +99,7 @@ public class LamStack extends Stack {
 
 
                 Rule lamTrigger = Rule.Builder.create(this, "LAM-Fargate-Trigger")
-                                .schedule(Schedule.cron(CronOptions.builder().hour("23").build())).build();
+                                .schedule(Schedule.cron(CronOptions.builder().hour("1").minute("30").build())).build();
 
                 EcsTask task = EcsTask.Builder.create().cluster(cluster).taskCount(1).taskDefinition(tasdef)
                                 .subnetSelection(SubnetSelection.builder().subnetType(SubnetType.PRIVATE).build())

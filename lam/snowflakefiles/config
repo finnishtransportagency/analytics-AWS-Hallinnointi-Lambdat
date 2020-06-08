@@ -25,11 +25,11 @@
 
 accountname = fta  
 region = eu-central-1
-username = ******
-password = ******
-dbname = vayla_data_hub_dev
+username = ****
+password = ****
+dbname = vayla_data_hub_prod
 schemaname = staging
-warehousename = livi_ade_dev_wh
+warehousename = livi_ade_prod_wh
 
 [variables]
 #Loads these variables on startup

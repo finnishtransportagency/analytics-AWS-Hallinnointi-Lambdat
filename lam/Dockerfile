@@ -27,6 +27,6 @@ RUN gcc hpkpurku.c -o hpkpurku;chmod 777 hpkpurku;mv hpkpurku /data/hpk/bin/
 RUN cp aineistotsync.lftp /data/hpk/bin/
 
 # Kontin suoritus
-#CMD ["./LAMdaily.sh"]
+CMD ["./LAMdaily.sh"]
 # Paikallista docker kehitysta varten pitaa kontin elossa... MUISTA POISTAA!
-CMD tail -f /dev/null
+#CMD tail -f /dev/null

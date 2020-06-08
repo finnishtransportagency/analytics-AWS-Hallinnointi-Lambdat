@@ -1,1 +1,7 @@
 cdk
+.vscode
+.settings
+.classpath
+target
+.project
+.DS_Store
