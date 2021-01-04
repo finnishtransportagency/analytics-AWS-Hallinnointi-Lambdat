@@ -25,8 +25,8 @@
 
 accountname = fta  
 region = eu-central-1
-username = ****
-password = ****
+username = USER
+password = PASSWORD
 dbname = vayla_data_hub_prod
 schemaname = staging
 warehousename = livi_ade_prod_wh

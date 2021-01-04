@@ -1,6 +1,6 @@
 set net:max-retries 3
 set net:reconnect-interval-base 5
-open -u lam-rawdata,**** sftp://aineistot.vayla.fi
+open -u USER,PASSWORD sftp://aineistot.vayla.fi
 cd upload
 ls
-mirror -c -R -L --exclude full --exclude hpk* --exclude HPK* --exclude .listing 2020 2020
+mirror -c -R -L --exclude full --exclude hpk* --exclude HPK* --exclude .listing 2021 2021

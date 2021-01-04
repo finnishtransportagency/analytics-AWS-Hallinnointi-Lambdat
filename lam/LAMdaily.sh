@@ -9,9 +9,9 @@ s3kohde=s3://vayla-lam-data/$ymparisto/snowpipe/ #mihin S3 buckettiin  ja rakent
 base=/data/hpk
 hpkpurku=$base/bin/hpkpurku
 ybase=$base/172.18.32.36/LAM
-vuodet='2020'		#jos tässä on kaksi arvoa niin täytä serraavakin
+vuodet='2021'		#jos tässä on kaksi arvoa niin täytä serraavakin
 vuosi_vanha=''
-vuosi_uusi='2020'
+vuosi_uusi='2021'
 jako_paiva='350' 	#paivanumero jota suuremmat ovat vanhaa vuott
 		        #toimii vain jos vuosi_vanha on asetettu 
 alueet='01 02 03 04 08 09 10 12 14'
