@@ -62,7 +62,7 @@ div.cognos {
 .column {
     float: left;
     width: 40%;
-    margin: 50px 20px 10px 50px;
+    margin: 50px 20px 10px 10px;
 }
 
 /* Clear floats after the columns */
