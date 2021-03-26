@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import software.amazon.awscdk.services.certificatemanager.Certificate;
 import software.amazon.awscdk.core.Construct;
+import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
 import software.amazon.awscdk.services.s3.Bucket;
@@ -15,6 +15,7 @@ import software.amazon.awscdk.services.s3.deployment.BucketDeployment;
 import software.amazon.awscdk.services.s3.deployment.BucketDeploymentProps;
 import software.amazon.awscdk.services.s3.deployment.ISource;
 import software.amazon.awscdk.services.s3.deployment.Source;
+import software.amazon.awscdk.services.certificatemanager.Certificate;
 import software.amazon.awscdk.services.cloudfront.Behavior;
 import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistribution;
 import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps;
@@ -25,6 +26,7 @@ import software.amazon.awscdk.services.cloudfront.OriginProtocolPolicy;
 import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
 import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
 import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
+import software.amazon.awscdk.services.cloudfront.CfnDistribution.ForwardedValuesProperty;
 
 public class LandingpageStack extends Stack {
     public LandingpageStack(final Construct scope, final String id) {
@@ -74,25 +76,40 @@ public class LandingpageStack extends Stack {
             .behaviors(Arrays.asList(s3behavior,s3behavior2,s3behavior3))
             .build();
 
+        // Send traffic to elb as http
         CustomOriginConfig customOriginSource = CustomOriginConfig.builder()
             .domainName("tableu-LB-1374501584.eu-central-1.elb.amazonaws.com")
             .httpPort(80)
             .httpsPort(443)
-            .originProtocolPolicy(OriginProtocolPolicy.HTTP_ONLY) // TODO: change to match viewer (http + https) when dns etc settings allow it?
+            .originProtocolPolicy(OriginProtocolPolicy.HTTP_ONLY)
             .build();
 
-        // TODO: disable caching for dynamic content, but cant find API for it?
-        // cache settings like legacy vs. policy etc and ie. "managed-cachingdisabled" policy
-        // which are available in console
-        // also viewer protocol policy to "http and https"
+        // TODO: check if these legacy TTL settings disable caching,
+        // if not use newer "cahce policy" type available from console
+        // TODO: how to set viewer policy "redirect http to https"
         Behavior cognosBehavior = Behavior.builder()
             .pathPattern("ibmcognos/*")
+            .minTtl(Duration.seconds(0))
+            .maxTtl(Duration.seconds(0))
+            .defaultTtl(Duration.seconds(0))
+            .forwardedValues(ForwardedValuesProperty.builder()
+                            .queryString(true)
+                            .queryStringCacheKeys(Arrays.asList("vaylaisthebest"))
+                            .build())
             .build();
 
+        // TODO: same as above re: cache and https redirect
         // All the rest paths for Loadbalancer origin including hopefully tableau paths
         // currently not working because of #-symbol in the urls
         Behavior defaultBehavior = Behavior.builder()
             .isDefaultBehavior(true)
+            .minTtl(Duration.seconds(0))
+            .maxTtl(Duration.seconds(0))
+            .defaultTtl(Duration.seconds(0))
+            .forwardedValues(ForwardedValuesProperty.builder()
+                            .queryString(true)
+                            .queryStringCacheKeys(Arrays.asList("vaylaisthebest"))
+                            .build())
             .build();
 
         SourceConfiguration lbSourceConfiguration = SourceConfiguration.builder()
