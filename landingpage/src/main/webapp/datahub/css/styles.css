@@ -19,7 +19,7 @@ img.logo {
 }
 
 img.suuri {
-    width:320px;
+    width: 350px;
     border: solid black 1px;
 }
 
@@ -48,11 +48,20 @@ div.banner {
 div.tableau {
     float:left;
     text-align: center;
+    width:50%
 }
 
 div.cognos {
     float:right;
     text-align: center;
+    width:50%
+}
+
+.column>p {
+    width:350px;
+    margin-left:auto;
+    margin-right:auto;
+    text-align:left;
 }
 
 .content {
@@ -61,13 +70,13 @@ div.cognos {
 
 /* enough for two large images, center it */
 .row {
-    width: 720px;
+    width: 800px;
     margin-left: auto;
     margin-right: auto;
 }
 
 .column {
-    margin: 80px 10px 50px 10px;
+    margin: 80px 0px 50px 0px;
 }
 
 .row:after {

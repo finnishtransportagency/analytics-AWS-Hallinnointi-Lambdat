@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import software.amazon.awscdk.services.certificatemanager.Certificate;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
@@ -20,8 +21,10 @@ import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps
 import software.amazon.awscdk.services.cloudfront.CustomOriginConfig;
 import software.amazon.awscdk.services.cloudfront.OriginAccessIdentity;
 import software.amazon.awscdk.services.cloudfront.OriginAccessIdentityProps;
+import software.amazon.awscdk.services.cloudfront.OriginProtocolPolicy;
 import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
 import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
+import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
 
 public class LandingpageStack extends Stack {
     public LandingpageStack(final Construct scope, final String id) {
@@ -50,45 +53,60 @@ public class LandingpageStack extends Stack {
         S3OriginConfig s3OriginSource = S3OriginConfig.builder()
             .s3BucketSource(webbucket)
             .originAccessIdentity(originAccessIdentity)
+            //.originPath("/datahub")
             .build();
 
         //Path based behaviors for static content from s3
         Behavior s3behavior = Behavior.builder()
-            .pathPattern("images/*")
+            .pathPattern("datahub/images/*")
             .build(); 
         
         Behavior s3behavior2 = Behavior.builder()
-            .pathPattern("css/*")
+            .pathPattern("datahub/css/*")
             .build();
         
         Behavior s3behavior3 = Behavior.builder()
-            .pathPattern("index.html")
+            .pathPattern("datahub/index.html")
             .build();
 
-        SourceConfiguration sourceConfiguration = SourceConfiguration.builder()
+        SourceConfiguration s3SourceConfiguration = SourceConfiguration.builder()
             .s3OriginSource(s3OriginSource)
             .behaviors(Arrays.asList(s3behavior,s3behavior2,s3behavior3))
             .build();
 
         CustomOriginConfig customOriginSource = CustomOriginConfig.builder()
-            .domainName("Tableu-LB-1374501584.eu-central-1.elb.amazonaws.com")
+            .domainName("tableu-LB-1374501584.eu-central-1.elb.amazonaws.com")
             .httpPort(80)
             .httpsPort(443)
+            .originProtocolPolicy(OriginProtocolPolicy.HTTP_ONLY) // TODO: change to match viewer (http + https) when dns etc settings allow it?
             .build();
 
-        // All the rest paths follow this behavior (for Loadbalancer origin)
-        // TODO: disable caching for dynamic content
-        Behavior lbBehavior = Behavior.builder()
+        // TODO: disable caching for dynamic content, but cant find API for it?
+        // cache settings like legacy vs. policy etc and ie. "managed-cachingdisabled" policy
+        // which are available in console
+        // also viewer protocol policy to "http and https"
+        Behavior cognosBehavior = Behavior.builder()
+            .pathPattern("ibmcognos/*")
+            .build();
+
+        // All the rest paths for Loadbalancer origin including hopefully tableau paths
+        // currently not working because of #-symbol in the urls
+        Behavior defaultBehavior = Behavior.builder()
             .isDefaultBehavior(true)
             .build();
 
-        SourceConfiguration sourceConfiguration2 = SourceConfiguration.builder()
+        SourceConfiguration lbSourceConfiguration = SourceConfiguration.builder()
             .customOriginSource(customOriginSource)
-            .behaviors(Arrays.asList(lbBehavior))
+            .behaviors(Arrays.asList(cognosBehavior, defaultBehavior))
             .build();
 
+        ViewerCertificate viewerCertificate = ViewerCertificate
+            .fromAcmCertificate(Certificate.fromCertificateArn(this, "data-vayla-fi-cert", "arn:aws:acm:us-east-1:169978597495:certificate/382e9e98-2158-4f3e-b871-1b18976d5286"));
+
         CloudFrontWebDistributionProps webDistributionProps = CloudFrontWebDistributionProps.builder()
-            .originConfigs(Arrays.asList(sourceConfiguration, sourceConfiguration2))
+            .originConfigs(Arrays.asList(s3SourceConfiguration, lbSourceConfiguration))
+            .viewerCertificate(viewerCertificate)
+            .defaultRootObject("/")
             .build();
         
         // Here we go!
