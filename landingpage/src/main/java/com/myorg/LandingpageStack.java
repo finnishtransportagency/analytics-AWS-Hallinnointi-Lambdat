@@ -5,9 +5,21 @@ import java.util.Arrays;
 import java.util.List;
 
 import software.amazon.awscdk.core.Construct;
-import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.core.StackProps;
+import software.amazon.awscdk.services.certificatemanager.Certificate;
+import software.amazon.awscdk.services.certificatemanager.ICertificate;
+import software.amazon.awscdk.services.cloudfront.AliasConfiguration;
+import software.amazon.awscdk.services.cloudfront.Behavior;
+import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistribution;
+import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps;
+import software.amazon.awscdk.services.cloudfront.HttpVersion;
+import software.amazon.awscdk.services.cloudfront.OriginAccessIdentity;
+import software.amazon.awscdk.services.cloudfront.OriginAccessIdentityProps;
+import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
+import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
+import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
+import software.amazon.awscdk.services.cloudfront.ViewerCertificateOptions;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.BucketEncryption;
 import software.amazon.awscdk.services.s3.BucketProps;
@@ -15,18 +27,6 @@ import software.amazon.awscdk.services.s3.deployment.BucketDeployment;
 import software.amazon.awscdk.services.s3.deployment.BucketDeploymentProps;
 import software.amazon.awscdk.services.s3.deployment.ISource;
 import software.amazon.awscdk.services.s3.deployment.Source;
-import software.amazon.awscdk.services.certificatemanager.Certificate;
-import software.amazon.awscdk.services.cloudfront.Behavior;
-import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistribution;
-import software.amazon.awscdk.services.cloudfront.CloudFrontWebDistributionProps;
-import software.amazon.awscdk.services.cloudfront.CustomOriginConfig;
-import software.amazon.awscdk.services.cloudfront.OriginAccessIdentity;
-import software.amazon.awscdk.services.cloudfront.OriginAccessIdentityProps;
-import software.amazon.awscdk.services.cloudfront.OriginProtocolPolicy;
-import software.amazon.awscdk.services.cloudfront.S3OriginConfig;
-import software.amazon.awscdk.services.cloudfront.SourceConfiguration;
-import software.amazon.awscdk.services.cloudfront.ViewerCertificate;
-import software.amazon.awscdk.services.cloudfront.CfnDistribution.ForwardedValuesProperty;
 
 public class LandingpageStack extends Stack {
     public LandingpageStack(final Construct scope, final String id) {
@@ -60,70 +60,30 @@ public class LandingpageStack extends Stack {
 
         //Path based behaviors for static content from s3
         Behavior s3behavior = Behavior.builder()
-            .pathPattern("datahub/images/*")
+            .isDefaultBehavior(true)
             .build(); 
-        
-        Behavior s3behavior2 = Behavior.builder()
-            .pathPattern("datahub/css/*")
-            .build();
-        
-        Behavior s3behavior3 = Behavior.builder()
-            .pathPattern("datahub/index.html")
-            .build();
 
         SourceConfiguration s3SourceConfiguration = SourceConfiguration.builder()
             .s3OriginSource(s3OriginSource)
-            .behaviors(Arrays.asList(s3behavior,s3behavior2,s3behavior3))
+            .behaviors(Arrays.asList(s3behavior))
             .build();
 
-        // Send traffic to elb as http
-        CustomOriginConfig customOriginSource = CustomOriginConfig.builder()
-            .domainName("tableu-LB-1374501584.eu-central-1.elb.amazonaws.com")
-            .httpPort(80)
-            .httpsPort(443)
-            .originProtocolPolicy(OriginProtocolPolicy.HTTP_ONLY)
-            .build();
-
-        // TODO: check if these legacy TTL settings disable caching,
-        // if not use newer "cahce policy" type available from console
-        // TODO: how to set viewer policy "redirect http to https"
-        Behavior cognosBehavior = Behavior.builder()
-            .pathPattern("ibmcognos/*")
-            .minTtl(Duration.seconds(0))
-            .maxTtl(Duration.seconds(0))
-            .defaultTtl(Duration.seconds(0))
-            .forwardedValues(ForwardedValuesProperty.builder()
-                            .queryString(true)
-                            .queryStringCacheKeys(Arrays.asList("vaylaisthebest"))
-                            .build())
-            .build();
-
-        // TODO: same as above re: cache and https redirect
-        // All the rest paths for Loadbalancer origin including hopefully tableau paths
-        // currently not working because of #-symbol in the urls
-        Behavior defaultBehavior = Behavior.builder()
-            .isDefaultBehavior(true)
-            .minTtl(Duration.seconds(0))
-            .maxTtl(Duration.seconds(0))
-            .defaultTtl(Duration.seconds(0))
-            .forwardedValues(ForwardedValuesProperty.builder()
-                            .queryString(true)
-                            .queryStringCacheKeys(Arrays.asList("vaylaisthebest"))
-                            .build())
-            .build();
-
-        SourceConfiguration lbSourceConfiguration = SourceConfiguration.builder()
-            .customOriginSource(customOriginSource)
-            .behaviors(Arrays.asList(cognosBehavior, defaultBehavior))
+        ICertificate certificate = Certificate.fromCertificateArn(this, "data-vayla-fi-cert", "arn:aws:acm:us-east-1:169978597495:certificate/382e9e98-2158-4f3e-b871-1b18976d5286");
+        ViewerCertificateOptions coptions = ViewerCertificateOptions.builder()
+            .aliases(Arrays.asList("palvelut.data.vayla.fi"))
             .build();
 
         ViewerCertificate viewerCertificate = ViewerCertificate
-            .fromAcmCertificate(Certificate.fromCertificateArn(this, "data-vayla-fi-cert", "arn:aws:acm:us-east-1:169978597495:certificate/382e9e98-2158-4f3e-b871-1b18976d5286"));
+            .fromAcmCertificate(certificate, coptions);
+
+        HttpVersion httpVersion = HttpVersion.HTTP2;
 
         CloudFrontWebDistributionProps webDistributionProps = CloudFrontWebDistributionProps.builder()
-            .originConfigs(Arrays.asList(s3SourceConfiguration, lbSourceConfiguration))
+            .originConfigs(Arrays.asList(s3SourceConfiguration))
             .viewerCertificate(viewerCertificate)
-            .defaultRootObject("/")
+            .defaultRootObject("index.html")
+            .enableIpV6(true)
+            .httpVersion(httpVersion)
             .build();
         
         // Here we go!
