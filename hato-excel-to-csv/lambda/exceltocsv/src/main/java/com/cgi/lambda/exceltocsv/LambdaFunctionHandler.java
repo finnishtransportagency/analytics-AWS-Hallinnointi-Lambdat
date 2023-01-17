@@ -257,37 +257,74 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 		String sourceBucket = s3Entity.getBucket().getName();
 		String sourceKey = s3Entity.getObject().getKey();
 
-		if (!sourceKey.endsWith(".xls") && !sourceKey.endsWith(".xlsx")) {
+		String[] sourceKeyPieces = sourceKey.split("/");
+		String sourceFileName = sourceKeyPieces[sourceKeyPieces.length - 1].toLowerCase();
+		this.logger.log("sourceFileName is: " + sourceFileName);
+		String sourceFileNameWithoutTimestamp = sourceFileName;
+
+		//private static Pattern TIMESTAMP_PATTERN = Pattern.compile("^\\d{4}-\\d{2}-\\d{2}-\\d{2}-\\d{2}-\\d{2}-\\d{3}$");
+
+		// Odotetaan tiedostoa muodossa hato_kehhanke_2023-01-04-14-07-05-197.xlsx
+
+		if (!sourceFileName.endsWith(".xls") && !sourceFileName.endsWith(".xlsx")) {
 			this.logger.log("Not an excel file (" + sourceBucket + sourceKey +  "). Nothing to do => Exit");
 			return "";
 		}
-		else if (sourceKey.endsWith(".xls")) {
+		else if (sourceFileName.endsWith(".xls")) {
 			this.fileType = "xls";
 		}
 		else{
 			this.fileType = "xlsx";
 		}
 
-		if(FilenameUtils.getBaseName(sourceKey).equals("hato_kehhanke")){
-			this.logger.log("Kasitellaan tiedosto: " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType);
+		try {
+			int sepPos;
+			sepPos = sourceFileName.lastIndexOf("_");
+			sourceFileNameWithoutTimestamp = sourceFileName.substring(0, sepPos);
+		} catch (StringIndexOutOfBoundsException e) {
+			this.logger.log("Missing ' _ ' in: " + sourceFileName);
+			this.logger.log("Timestamp missing.");
 		}
-		else if (FilenameUtils.getBaseName(sourceKey).equals("hato_liik_otot")) {
-			this.logger.log("Kasitellaan tiedosto: " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType);
+		sourceFileNameWithoutTimestamp = sourceFileNameWithoutTimestamp + "." + this.fileType;
+		this.logger.log("sourceFileNameWithoutTimestamp is: " + sourceFileNameWithoutTimestamp);
+		/*
+		this.logger.log("sourceFileNameWithoutTimestamp (and extension) is: " + sourceFileNameWithoutTimestamp);
+		this.logger.log("sourceFileName is: " + sourceFileName);
+		try {
+			this.fileType = sourceFileName.split(".")[1];
+			sourceFileNameWithoutTimestamp = sourceFileNameWithoutTimestamp + "." + this.fileType;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			this.logger.log("Missing ' . ' in: " + sourceFileName);
+			this.logger.log("File extension is missing.");
 		}
-		else if (FilenameUtils.getBaseName(sourceKey).equals("hato_rata")) {
-			this.logger.log("Kasitellaan tiedosto: " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType);
+		this.logger.log("sourceFileNameWithoutTimestamp is: " + sourceFileNameWithoutTimestamp);
+		*/
+
+
+
+		String baseName = FilenameUtils.getBaseName(sourceFileNameWithoutTimestamp);
+		String logThisThing = ("Kasitellaan tiedosto: " + baseName + "." + this.fileType);
+
+		if(baseName.equals("hato_kehhanke")){
+			this.logger.log(logThisThing);
 		}
-		else if (FilenameUtils.getBaseName(sourceKey).equals("hato_teema")) {
-			this.logger.log("Kasitellaan tiedosto: " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType);
+		else if (baseName.equals("hato_liik_otot")) {
+			this.logger.log(logThisThing);
 		}
-		else if (FilenameUtils.getBaseName(sourceKey).equals("hato_tie")) {
-			this.logger.log("Kasitellaan tiedosto: " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType);
+		else if (baseName.equals("hato_rata")) {
+			this.logger.log(logThisThing);
 		}
-		else if (FilenameUtils.getBaseName(sourceKey).equals("hato_tilanne")) {
-			this.logger.log("Kasitellaan tiedosto: " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType);
+		else if (baseName.equals("hato_teema")) {
+			this.logger.log(logThisThing);
+		}
+		else if (baseName.equals("hato_tie")) {
+			this.logger.log(logThisThing);
+		}
+		else if (baseName.equals("hato_tilanne")) {
+			this.logger.log(logThisThing);
 		}
 		else{
-			this.logger.log("The file " + FilenameUtils.getBaseName(sourceKey) + "." + this.fileType + " is not correctly named => Exit");
+			this.logger.log("The file " + FilenameUtils.getBaseName(sourceFileNameWithoutTimestamp) + "." + this.fileType + " is not correctly named => Exit");
 			return "";
 		}
 
@@ -296,8 +333,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			return "";
 		}
 
-		String[] sourceKeyPieces = sourceKey.split("/");
-		String sourceFileName = sourceKeyPieces[sourceKeyPieces.length - 1].toLowerCase();
+		/*
 		String targetName = "";
 		String sheet = "";
 
@@ -316,7 +352,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			}
 			index++;
 		}
-
+		*/
 
 		// Lähteen luku
 		/*
@@ -363,15 +399,15 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			out.close();
 
 			// Kohteen kirjoitus
-			targetName = FilenameUtils.getBaseName(sourceKey); // Ajetaan aiemmasta koodista yli
-			FileSpec outputFile = makeDataFileName(targetName);
+			//FileSpec outputFile = makeDataFileName(targetName);
+			FileSpec outputFile = makeDataFileName(baseName);
 			this.writeDataFile(s3Client, outputFile, data);
 
 			// Lähteen arkistointi, arkistopolkuun lisätään päivämäärä (yyyyMMDD) ja tiedoston nimen eteen siirtoaikaleima (yyyyMMddhhmmss)
 			if (this.archiveBucket.length() > 0) {
-				String timestamp = DateTime.now().toString("yyyyMMddhhmmss");
-				String today = DateTime.now().toString("yyyyMMdd");
-				this.moveSourceFile(s3Client, sourceBucket, sourceKey, this.archiveBucket, this.archivePath + today + "/" + timestamp + " " + sourceFileName);
+				DateTime dateTimeOfOutputFile = new DateTime(Long.parseLong(outputFile.timestamp));
+				String today = dateTimeOfOutputFile.toString("yyyyMMdd");
+				this.moveSourceFile(s3Client, sourceBucket, sourceKey, this.archiveBucket, this.archivePath + today + "/" + outputFile.timestamp + " " + sourceFileName);
 			}
 
 		} catch (Exception e) {
