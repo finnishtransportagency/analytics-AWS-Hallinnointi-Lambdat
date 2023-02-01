@@ -333,7 +333,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			return "";
 		}
 
-		/*
+
 		String targetName = "";
 		String sheet = "";
 
@@ -352,7 +352,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			}
 			index++;
 		}
-		*/
+
 
 		// Lähteen luku
 		/*

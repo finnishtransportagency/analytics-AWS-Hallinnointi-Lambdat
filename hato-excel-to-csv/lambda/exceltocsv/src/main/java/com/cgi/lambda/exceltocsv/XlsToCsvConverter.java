@@ -97,6 +97,25 @@ public class XlsToCsvConverter {
 		}
 		return r;
 	}
+
+	private String replaceNonBreakingSpaces(String s) {
+		if (s == null) return(null);
+		s.replaceAll("\u00A0", " ");
+		s.replaceAll("\u2007", " ");
+		s.replaceAll("\u202F", " ");
+		return s;
+	}
+
+	public static String replaceSpaces(String s) {
+		if (s == null) return(null);
+		int[] spaceList = {
+			160, 5760, 6158, 8192, 8193, 8194, 8195, 8196, 8197, 8198, 8199, 8200, 8201, 8202, 8203, 8239, 8287, 12288, 65279
+		};
+		for(int c: spaceList) {
+			s = s.replace((char)c, ' ');
+		}
+		return(s);
+	}
 	
 	
 	public void setLogger(SimpleLogger logger) {
@@ -413,7 +432,10 @@ public class XlsToCsvConverter {
 	                        	} else {
 	                        		value = formatter.formatCellValue(xlcell);
 	                        	}
-								
+
+								value = replaceNonBreakingSpaces(value);
+								value = replaceSpaces(value);
+
 	                        }
 							ln.add(this.fixOutputValue(value));
 	                    }
@@ -442,6 +464,7 @@ public class XlsToCsvConverter {
 									s += this.quote;
 								}
 								if (this.trimData) {
+									//s += v.replaceAll("^ +| +$|( )+", "$1"); // huomioi extra spacet keskella
 									s += v.trim();
 								} else {
 									s += v;
