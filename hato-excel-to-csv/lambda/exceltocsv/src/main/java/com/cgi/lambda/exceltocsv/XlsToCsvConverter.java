@@ -29,24 +29,24 @@ import org.joda.time.DateTime;
 
 
 /**
- * 
+ *
  * Excel => CSV muunnin
- * 
+ *
  * Alkuperäinen versio 2013-10-16
  * Korjattu versio 2022-06-01
  * Muutettu kaikille lehdille 2022-11-01
- * 
+ *
  * @author isto.saarinen
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  *
  */
 public class XlsToCsvConverter {
 
 	private static final String CONVERT_ALL_SHEETS = "*";
-	
+
 	private static final String NULLSTRING = "null";
 	private boolean hasHeader = false;
 	private String replaceCR = "";
@@ -61,9 +61,9 @@ public class XlsToCsvConverter {
 	private String[][] replaceHeaderChars = { {"ä","a"},  {"å","a"}, {"ö","o"}, {" ","_"} };
 	private boolean trimData = false;
 	private int skipheaders = 0;
-	
+
 	private SimpleLogger logger = null;
-	
+
 
 	private void log(String s) {
 		if (this.logger != null) {
@@ -71,7 +71,7 @@ public class XlsToCsvConverter {
 		}
 	}
 
-	
+
 	// Alkaako merkkijono jollakin UTF-8 miinus- merkillä ?
 	// https://jkorpela.fi/dashes.html
 	private boolean startsWithSomeDash(String s) {
@@ -87,7 +87,7 @@ public class XlsToCsvConverter {
 		}
 		return(b);
 	}
-	
+
 	// Viivojen korvaus ascii miinuksella
 	private String replaceDashToAscii(String s) {
 		boolean b = this.startsWithSomeDash(s);
@@ -109,19 +109,19 @@ public class XlsToCsvConverter {
 	public static String replaceSpaces(String s) {
 		if (s == null) return(null);
 		int[] spaceList = {
-			160, 5760, 6158, 8192, 8193, 8194, 8195, 8196, 8197, 8198, 8199, 8200, 8201, 8202, 8203, 8239, 8287, 12288, 65279
+				160, 5760, 6158, 8192, 8193, 8194, 8195, 8196, 8197, 8198, 8199, 8200, 8201, 8202, 8203, 8239, 8287, 12288, 65279
 		};
 		for(int c: spaceList) {
 			s = s.replace((char)c, ' ');
 		}
 		return(s);
 	}
-	
-	
+
+
 	public void setLogger(SimpleLogger logger) {
 		this.logger = logger;
 	}
-	
+
 	public void setHasHeader(boolean flag) {
 		this.hasHeader = flag;
 	}
@@ -129,7 +129,7 @@ public class XlsToCsvConverter {
 	public void setReplaceCR(String replaceCR) {
 		this.replaceCR = replaceCR;
 	}
-	
+
 	public void setReplaceNL(String replaceNL) {
 		this.replaceNL = replaceNL;
 	}
@@ -137,11 +137,11 @@ public class XlsToCsvConverter {
 	public void setDelimiter(String delimiter) {
 		this.delimiter = delimiter;
 	}
-	
+
 	public void setQuote(String quote) {
 		this.quote = quote;
 	}
-	
+
 	public void setQuoteEscape(String quoteEscape) {
 		this.quoteEscape = quoteEscape;
 	}
@@ -153,15 +153,15 @@ public class XlsToCsvConverter {
 	public void setCharSet(String charSet) {
 		this.charSet = charSet;
 	}
-	
+
 	public void setEOL(String eol) {
 		this.eol = eol;
 	}
-	
+
 	public void setTrimData(boolean trimData) {
 		this.trimData = trimData;
 	}
-	
+
 	public void setSkipheaders(int skipheaders) {
 		this.skipheaders = skipheaders;
 	}
@@ -209,18 +209,18 @@ public class XlsToCsvConverter {
 		}
 		return(s);
 	}
-	
-	
-	
-	
+
+
+
+
 	// Numeron muotoilu
 	private String formatNumber(Double d, DecimalFormat decimalFormat) {
 		String t = decimalFormat.format(d);
-	    // Remove trailing zeros
-	    t = t.replaceAll("0+$", "");
-	    // Remove decimal point (is integer or number without decimals)
-	    t = t.replaceAll("\\.$", "");
-	    return this.replaceDashToAscii(t);    
+		// Remove trailing zeros
+		t = t.replaceAll("0+$", "");
+		// Remove decimal point (is integer or number without decimals)
+		t = t.replaceAll("\\.$", "");
+		return this.replaceDashToAscii(t);
 	}
 
 	private String formatDate(Date dt) {
@@ -228,9 +228,9 @@ public class XlsToCsvConverter {
 	}
 
 
-	
-	
-	
+
+
+
 	// Muunna. Kutsuja antaa in ja out streamit
 	public RunStatusDto convert(InputStream in, OutputStream out, String fileType /*, File excelFile*/) {
 		RunStatusDto result = new RunStatusDto();
@@ -239,7 +239,7 @@ public class XlsToCsvConverter {
 		DataFormatter formatter = null;
 		DecimalFormat decimalFormat = null;
 		Sheet xlsheet = null;
-        
+
 		try {
 			/*
 			if (fileType == "xls"){
@@ -253,16 +253,16 @@ public class XlsToCsvConverter {
 			workbook = WorkbookFactory.create(in);
 			//}
 			//Locale finnish = new Locale("fi", "FI");
-            formatter = new DataFormatter(/*finnish, */true);
+			formatter = new DataFormatter(/*finnish, */true);
 			DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
 			decimalFormatSymbols.setDecimalSeparator('.');
 			decimalFormat = new DecimalFormat("0.0000000000", decimalFormatSymbols);
 		} catch (Exception e) {
-        	this.log("convert(): workbook open failed: '" + e.toString() + "': '" + e.getMessage() + "'");
-        	result.setErrorMessage(e.toString() + ", " + e.getMessage());
-        	result.setStatus(false);
-        	return(result);
-        }
+			this.log("convert(): workbook open failed: '" + e.toString() + "': '" + e.getMessage() + "'");
+			result.setErrorMessage(e.toString() + ", " + e.getMessage());
+			result.setStatus(false);
+			return(result);
+		}
 		if (workbook != null) {
 
 			/*
@@ -294,13 +294,13 @@ public class XlsToCsvConverter {
 			for (int i = 0; i < sheets; i++) {
 				this.sheetNames[i] = workbook.getSheetName(i);
 			}
-			
+
 			// Muunnetaan lehdet
 			this.log("Convert " + this.sheetNames.length + " sheets");
 			for (int i = 0; i < this.sheetNames.length; i++) {
 				String sheetName = this.sheetNames[i];
 				this.log("Convert sheet = '" + sheetName + "'");
-				xlsheet = workbook.getSheet(sheetName); 
+				xlsheet = workbook.getSheet(sheetName);
 				if (xlsheet != null) {
 					boolean useHeader = (i == 0);
 					if (!this.hasHeader) useHeader = true;
@@ -313,19 +313,19 @@ public class XlsToCsvConverter {
 				} else {
 					// Invalid sheet name: log & continue
 					this.log("Convert sheet '" + sheetName + "': not found, continue.");
-					
+
 				}
 			}
 			this.log("Convert done, return status = " + result.getStatus());
 		}
-		
+
 		return(result);
 	}
-	
-	
 
-	
-	
+
+
+
+
 	// Muunna lehti
 	public RunStatusDto convertSheet(Sheet xlsheet, DataFormatter formatter, DecimalFormat decimalFormat, boolean useHeader, String sheetName, InputStream in, OutputStream out) {
 		RunStatusDto result = new RunStatusDto();
@@ -335,25 +335,26 @@ public class XlsToCsvConverter {
 		int rows = 0;
 		int row = 0;
 		String value = "";
-        Row xlrow = null;
-        Cell xlcell = null;
-		
+		Row xlrow = null;
+		Cell xlcell = null;
+
 		if (xlsheet != null) {
-				
+
 			int datalines = 0;
-			
+
 			// ohitetaan jos ei datarivejä
 			if(xlsheet.getPhysicalNumberOfRows() > 0) {
 				rows = xlsheet.getLastRowNum();
 
 				// Käsitellään kaikki rivit annetusta eteenpäin
 				for(row = this.skipheaders; row <= rows; row++) {
+					boolean skipEmptyRow = true;
 					xlrow = xlsheet.getRow(row);
 					if (xlrow != null) {
 						List<String> ln = new ArrayList<String>();
 
 						if (row == this.skipheaders) {
-							
+
 							// Jos otsikko on olemassa, otetaan sarakemäärä siitä
 							if (this.hasHeader) {
 								cols = xlrow.getLastCellNum();
@@ -376,7 +377,7 @@ public class XlsToCsvConverter {
 							}
 							this.log("Sheet '" + sheetName + "': skip rows before header = " + this.skipheaders + ", columns = " + cols + ", rows = " + rows + ", include sheet name = " + this.includeSheetName);
 						}
-						
+
 						if (this.includeSheetName) {
 							// Lisätään lehden nimi ensimmäiseksi sarakkeeksi
 							if (this.hasHeader && (row == this.skipheaders) && useHeader) {
@@ -386,11 +387,11 @@ public class XlsToCsvConverter {
 							}
 							ln.add(value);
 						}
-							
+
 						// Muotoillaan sarakkeen data
 						for(col = 0; col <= cols; col++) {
 							xlcell = xlrow.getCell(col);
-							value = ""; 
+							value = "";
 							if (xlcell != null) {
 
 								if (xlcell.getCellType() == CellType.NUMERIC) {
@@ -399,46 +400,51 @@ public class XlsToCsvConverter {
 									if (DateUtil.isCellDateFormatted(xlcell)) {
 										// Pvm
 										value = this.formatDate(xlcell.getDateCellValue());
-	                        		} else {
-	                        			// Numero
-	                        			value = this.formatNumber(d, decimalFormat);
-	   	                        	}
-	                        	} else if (xlcell.getCellType() == CellType.FORMULA) {
-	                        		// Kaava
-	                        		CellType t = xlcell.getCachedFormulaResultType();
-                                       if (t == CellType.NUMERIC) {
-                                    	   double d = xlcell.getNumericCellValue();
-                                    	   if (DateUtil.isCellDateFormatted(xlcell)) {
-                                    		   // Pvm
-                                    		   value = this.formatDate(xlcell.getDateCellValue());
-                                    	   } else {
-                                    		   // Numero
-                                    		   value = this.formatNumber(d, decimalFormat);
-                                    	   }
-                                       } else if (t == CellType.BOOLEAN) {
-                                    	   // 
-                                    	   if (xlcell.getBooleanCellValue()) {
-                                    		   value = "1";
-                                    	   } else {
-                                    		   value = "0";
-                                    	   }
-                                       } else if (t == CellType.ERROR) {
-                                    	   // Virhe => tyhjä arvo
-                                    	   value = "";
-                                       } else {
-                                    	   value = xlcell.getStringCellValue();
-                                       }
-	                        	
-	                        	} else {
-	                        		value = formatter.formatCellValue(xlcell);
-	                        	}
+									} else {
+										// Numero
+										value = this.formatNumber(d, decimalFormat);
+									}
+								} else if (xlcell.getCellType() == CellType.FORMULA) {
+									// Kaava
+									CellType t = xlcell.getCachedFormulaResultType();
+									if (t == CellType.NUMERIC) {
+										double d = xlcell.getNumericCellValue();
+										if (DateUtil.isCellDateFormatted(xlcell)) {
+											// Pvm
+											value = this.formatDate(xlcell.getDateCellValue());
+										} else {
+											// Numero
+											value = this.formatNumber(d, decimalFormat);
+										}
+									} else if (t == CellType.BOOLEAN) {
+										//
+										if (xlcell.getBooleanCellValue()) {
+											value = "1";
+										} else {
+											value = "0";
+										}
+									} else if (t == CellType.ERROR) {
+										// Virhe => tyhjä arvo
+										value = "";
+									} else {
+										value = xlcell.getStringCellValue();
+									}
+
+								} else {
+									value = formatter.formatCellValue(xlcell);
+								}
 
 								value = replaceNonBreakingSpaces(value);
 								value = replaceSpaces(value);
 
-	                        }
+							}
 							ln.add(this.fixOutputValue(value));
-	                    }
+							if (skipEmptyRow){
+								if ((this.fixOutputValue(value).length()) > 0){
+									skipEmptyRow = false;
+								}
+							}
+						}
 
 						int c = 0;
 						String s = "";
@@ -454,7 +460,7 @@ public class XlsToCsvConverter {
 									c++;
 								}
 							}
-						} else {
+						} else if (!skipEmptyRow) {
 							// Datan kirjoitus
 							for (String v : ln) {
 								if (c > 0) {
@@ -479,7 +485,7 @@ public class XlsToCsvConverter {
 						if (this.hasHeader && (row == this.skipheaders) && (!useHeader)) {
 							// Ohitetaan otsikko
 							//logger.log("Sheet '" + sheetName + "': skip data line " + (row + 1) + " = [header]");
-						} else {
+						} else if (!skipEmptyRow) {
 							//logger.log("Sheet '" + sheetName + "': write data line " + (row + 1) + " = [data]");
 							//logger.log("Sheet '" + sheetName + "': write data line " + (row + 1) + " = [" + s.toString() + "]");
 							s += this.eol;
@@ -492,17 +498,17 @@ public class XlsToCsvConverter {
 								return(result);
 							}
 						}
-					
-					}
-                }
-            }
 
-			this.log("Sheet '" + sheetName + "': data lines written: " + datalines);				
+					}
+				}
+			}
+
+			this.log("Sheet '" + sheetName + "': data lines written: " + datalines);
 			result.setStatus(true);
 		}
 
 		return result;
-	}	
+	}
 
 
 }

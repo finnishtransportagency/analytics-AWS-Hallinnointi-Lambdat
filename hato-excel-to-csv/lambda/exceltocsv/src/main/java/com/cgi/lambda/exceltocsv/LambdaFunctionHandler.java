@@ -576,13 +576,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 		}
 		logger.log("Write data, file name = '" + fullPath + "' => result = " + result);
 		return result;
+
 	}
-
-
-
-
-
-
-
 
 }
