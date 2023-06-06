@@ -4,7 +4,7 @@
   "description": "Convert FMI wfs/xml to json",
   "main": "index.js",
   "dependencies": {
-    "fast-xml-parser": "^3.16.0",
+    "fast-xml-parser": "^4.2.4",
     "jsonpath": "^1.0.2",
     "xml2json": "^0.12.0"
   },
