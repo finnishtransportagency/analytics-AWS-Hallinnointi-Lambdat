@@ -5,9 +5,9 @@ import boto3
 from requests.auth import HTTPBasicAuth
 import datetime
 import time
-import logging
 
 
+#TODO Vaihda lambdan nimi väyläpilveen -> ais-waterway-api-s3-csv-pipeline
 
 def get_secret(secretname):
     region_name = 'eu-central-1'
@@ -104,9 +104,10 @@ def s3_write(bucket_name, file_name, data):
     try:
         s3.Bucket(bucket_name).put_object(Key=file_name, Body=data, ACL='bucket-owner-full-control')
         obj_length = len(data)
-        print("File saved to s3 with name {}. File length: {}.".format(file_name, obj_length))
+        print("Wrote file: {} to bucket: {}. File length: {}.".format(file_name, bucket_name, obj_length))        
     except Exception as e:
-        print(f"Failed to write {file_name} to s3. Error: {e}")
+        print(f"Failed to write {file_name} to bucket {bucket_name}. Error: {e}")
+    
 
 
 def header_parse(header, data, id_text):
@@ -122,6 +123,7 @@ def header_parse(header, data, id_text):
                 vfield = str(vfield).replace("\n", " ").replace("\r", " ").strip().lower()
                 header += ';"' + vfield + '"'
             header += "\n"
+    
     return header
 
 def data_parse(data, parent_id):
@@ -162,6 +164,7 @@ def lambda_handler(events, context):
         return "Secrets configuration error"
 
     target_bucket = os.environ["target_bucket"]
+    ais_landing_bucket = os.environ['ais_bucket'] #This is ais landing bucket for copy of vaylaalue (fairway areas) file for container geoPointsCompare
     filter = os.environ["filter"]
     # HUOM: jos tekee yhden arvon jossa esim , erotettu lista niin voi muuttaa lennosta (lähinnä poisto/yhden testaus kerrallaan)
     
@@ -179,6 +182,7 @@ def lambda_handler(events, context):
             
     dataset_list = []
     #checks for allt he dataset names found within environmental variables. Range can be limited for testing purposes.
+    print("Checking available datasets from environment variables")
     for i in range(1,4):
         
         id = "dataset{}".format(i)
@@ -191,10 +195,10 @@ def lambda_handler(events, context):
         except Exception as e:
             print("Dataset {} not found. Error {}".format(id, e))
             continue
-
+    print("Found {} datasets: {}".format(len(dataset_list, dataset_list)))
     if len(dataset_list) < 1:
-        print("Nothing to process. Please double check that there are datasets to process and their names are correct.")
-        exit()
+        print("Nothing to process. No datasets were found for processing.")
+        
         
     
     #varmistaa, että urlin muoto on oikea, https://api.fi/rajapinta/data?x=1,2
@@ -208,26 +212,27 @@ def lambda_handler(events, context):
         if datasetti == '':
             continue
         
-        print(datasetti)
-
+        
+        print("Fetching data from API for dataset: {}".format(datasetti))
         url_get	= f"{url}{datasetti}{filter}" #.format(url, datasetti, url_end) 
         response = None
         
         try:
             response = requests.get(url_get, auth = HTTPBasicAuth(username, password))
+            #print("API fetch successful")
         except requests.exceptions.RequestException as e:
             print("Unable to reach API for dataset: {} at URL: {}. Error {}".format(datasetti, url_get, e))
             continue
         if response.status_code == 401:
             print("API respose 401. Unable to access data due to access denied. Shutting down operation.")
-            exit()
+            
        
         
         json_data = ''
         try:
             json_data = json.loads(response.text)
         except Exception as e:
-            print("Json.loads failed. Error: {}".format(e))
+            print("Json.loads failed for dataset {}. Error: {}".format(datasetti, e))
     
     
         # Parserin testi, luetaan tallennettu json levyltä
@@ -250,7 +255,7 @@ def lambda_handler(events, context):
         quote = "\""
         escape = "\""
         
-        print("items = {}".format(len(json_data)))
+        print("Starting to process dataset: {}. No of items = {}".format(datasetti, len(json_data)))
     
         if len(json_data) > 0:
     
@@ -276,6 +281,7 @@ def lambda_handler(events, context):
             processed = []
             
             #Loops the json and determines the name of the 'id' field
+            print("Determining id row's name for dataset: {}".format(datasetti))
             for item in json_data:
                 rowcounter += 1
     
@@ -297,12 +303,14 @@ def lambda_handler(events, context):
                 processed_mitoitusalus = []
                 
                 #Loops the field names in fields-list and parses the headers and data into the csv-like variables.
+                print("Starting to process data fields for dataset: {}".format(datasetti))
                 for field in fields:
                     v = ''
                     
                         
                     
                     if field == 'vayla':
+                        print("Starting to process vayla-field for dataset: {}".format(datasetti))
                         #varmistetaan, ettei tule sama vayla kahdesti.
                         if dataid not in processed_vayla:
                             processed_vayla.append(dataid)
@@ -323,6 +331,7 @@ def lambda_handler(events, context):
                         v = ''
 
                     elif field == 'luokitus':
+                        print("Starting to process luokitus-field for dataset: {}".format(datasetti))
                         if dataid not in processed_luokitus:
                             processed_luokitus.append(dataid)
                         else:
@@ -337,6 +346,7 @@ def lambda_handler(events, context):
                         v = ''
 
                     elif field == 'mitoitusalus':
+                        print("Starting to process mitoitusalus-field for dataset: {}".format(datasetti))
                         if dataid not in processed_mitoitusalus:
                             processed_mitoitusalus.append(dataid)
                         else:
@@ -353,7 +363,7 @@ def lambda_handler(events, context):
 
                     #Kentän parsiminen, jos field ei ole 'vayla', ''luokitus' tai 'mitoitusalus'
                     
-                    else:
+                    else:                        
                         v = item[field]
                         #print("Muu kuin väylä tai luokitus prosessoitu. {}".format(datasetti))
                     if v == None:
@@ -369,10 +379,22 @@ def lambda_handler(events, context):
     
         timestamp = current_date()
         epoch_current = current_millisecond_time()
-        #Tallentaa datan könttäosan
+        #Tallentaa kaikkien datasettien datan pääosan
         file_name = f"waterway/{datasetti}/{timestamp}/table.waterway_{datasetti}.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-        s3_write(target_bucket, file_name, data)          
+        
+        try:
+            s3_write(target_bucket, file_name, data)               
+        except:
+            print("Unable to write file {} to bucket {}".format(file_name, target_bucket))
 
+        #This will save a copy of the vaylaalueet file to ais landing bucket for geoPointsCompare to consume
+        if datasetti == 'vaylaalueet':
+            file_name = "areas/ais-waterway-{}.csv".format(datasetti)
+            
+            try:
+                s3_write(ais_landing_bucket, file_name, data)                
+            except:
+                print("Unable to write file {} to bucket {}. This affects the data for geoPointsCompare container but nothing else.".format(file_name, ais_landing_bucket))
         # Processes the saving of the variables into the files.
         
         """ with open(f"{ADE_bucket}{timestamp}{datasetti}.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv", "w") as f:
@@ -385,9 +407,18 @@ def lambda_handler(events, context):
             #Määrittää linkkitiedoston adenimen sen mukaan onko kyseessä _luokitus vai _mitoitusalus
             
             file_name = f"waterway/{datasetti}_luokitus/{timestamp}/table.waterway_{datasetti}_luokitus.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-            s3_write(target_bucket, file_name, luokitusdata)  
+            
+            try:
+                s3_write(target_bucket, file_name, luokitusdata)                  
+            except:
+                print("Unable to write file {} to bucket {}".format(file_name, target_bucket))
+                
             file_name = f"waterway/{datasetti}_mitoitusalus/{timestamp}/table.waterway_{datasetti}_mitoitusalus.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-            s3_write(target_bucket, file_name, mitoitusalusdata)  
+            
+            try:
+                s3_write(target_bucket, file_name, mitoitusalusdata)                
+            except:
+                print("Unable to write file {} to bucket {}".format(file_name, target_bucket))
             #s3.Bucket(bucket, adenimi_link)
             #object.put(Body=vayladata)
             #trystä oma metodi, file nimi, datamuuttuja
@@ -398,14 +429,18 @@ def lambda_handler(events, context):
         else:
             epoch_current = current_millisecond_time()
             file_name = f"waterway/{datasetti}_vayla/{timestamp}/table.waterway_{datasetti}_vayla.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-           
-            s3_write(target_bucket, file_name, vayladata) 
+            
+            try:
+                s3_write(target_bucket, file_name, vayladata)
+                print("Wrote file: {} to bucket: {} for dataset: {}".format(file_name, target_bucket, datasetti)) 
+            except:
+                print("Unable to write file {} to bucket {}".format(file_name, target_bucket))
             """ with open(f"{ADE_bucket}{timestamp}{datasetti}_vayla.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv", "w") as f:
                 f.write(vayladata) """
     
         print("Load completed successfully for dataset {}".format(datasetti))
     time_track_end = time.time()
     time_total = int(time_track_end - time_track)
-    print("Load time {} seconds".format(time_total))
-    return "All datasets processed"
+    print("All datasets processed. Load time {} seconds".format(time_total))
+    return
 #lambda_handler(None, None)
