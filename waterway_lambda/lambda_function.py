@@ -441,6 +441,6 @@ def lambda_handler(events, context):
         print("Load completed successfully for dataset {}".format(datasetti))
     time_track_end = time.time()
     time_total = int(time_track_end - time_track)
-    print("All datasets processed. Load time {} seconds".format(time_total))
+    print("Following {} datasets were processed: {}. Load time {} seconds".format(len(dataset_list), dataset_list, time_total))
     return
 #lambda_handler(None, None)
