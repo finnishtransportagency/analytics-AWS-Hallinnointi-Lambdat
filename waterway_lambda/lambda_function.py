@@ -195,7 +195,7 @@ def lambda_handler(events, context):
         except Exception as e:
             print("Dataset {} not found. Error {}".format(id, e))
             continue
-    print("Found {} datasets: {}".format(len(dataset_list, dataset_list)))
+    print("Found {} datasets: {}".format(len(dataset_list), dataset_list))
     if len(dataset_list) < 1:
         print("Nothing to process. No datasets were found for processing.")
         
@@ -255,7 +255,7 @@ def lambda_handler(events, context):
         quote = "\""
         escape = "\""
         
-        print("Starting to process dataset: {}. No of items = {}".format(datasetti, len(json_data)))
+        
     
         if len(json_data) > 0:
     
@@ -281,7 +281,7 @@ def lambda_handler(events, context):
             processed = []
             
             #Loops the json and determines the name of the 'id' field
-            print("Determining id row's name for dataset: {}".format(datasetti))
+            print("Starting to process dataset: {}. No of items = {}".format(datasetti, len(json_data)))
             for item in json_data:
                 rowcounter += 1
     
@@ -303,19 +303,19 @@ def lambda_handler(events, context):
                 processed_mitoitusalus = []
                 
                 #Loops the field names in fields-list and parses the headers and data into the csv-like variables.
-                print("Starting to process data fields for dataset: {}".format(datasetti))
+                
                 for field in fields:
                     v = ''
                     
                         
                     
                     if field == 'vayla':
-                        print("Starting to process vayla-field for dataset: {}".format(datasetti))
+                        
                         #varmistetaan, ettei tule sama vayla kahdesti.
                         if dataid not in processed_vayla:
+                            #print("Starting to process vayla-field for dataset: {}".format(datasetti))
                             processed_vayla.append(dataid)
-                        else:
-                            continue
+                        
                         
                         if vaylaheader == '':
                             #tässä luodaan otsikko tiedostolle
@@ -331,11 +331,11 @@ def lambda_handler(events, context):
                         v = ''
 
                     elif field == 'luokitus':
-                        print("Starting to process luokitus-field for dataset: {}".format(datasetti))
+                        
                         if dataid not in processed_luokitus:
+                            #print("Starting to process luokitus-field for dataset: {}".format(datasetti))
                             processed_luokitus.append(dataid)
-                        else:
-                            continue
+                        
                           
                         if luokitusheader == '':                              
                             luokitusheader = header_parse(luokitusheader, item[field], "vaylaid") 
@@ -346,11 +346,11 @@ def lambda_handler(events, context):
                         v = ''
 
                     elif field == 'mitoitusalus':
-                        print("Starting to process mitoitusalus-field for dataset: {}".format(datasetti))
+                        
                         if dataid not in processed_mitoitusalus:
+                            #print("Starting to process mitoitusalus-field for dataset: {}".format(datasetti))
                             processed_mitoitusalus.append(dataid)
-                        else:
-                            continue    
+                            
                         
                             
                         if mitoitusheader == '':
@@ -381,7 +381,7 @@ def lambda_handler(events, context):
         epoch_current = current_millisecond_time()
         #Tallentaa kaikkien datasettien datan pääosan
         file_name = f"waterway/{datasetti}/{timestamp}/table.waterway_{datasetti}.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-        
+        print("Files processed for dataset: {}. Starting to write files.".format(datasetti))
         try:
             s3_write(target_bucket, file_name, data)               
         except:
