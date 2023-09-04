@@ -349,6 +349,7 @@ def lambda_handler(events, context):
         #Tallentaa kaikkien datasettien datan pääosan
         file_name = f"waterway/{datasetti}/{timestamp}/table.waterway_{datasetti}.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
         
+        print("Files processed for dataset: {}. Starting to write files.".format(datasetti))
         try:
             s3_write(target_bucket, file_name, data)   
         except:
