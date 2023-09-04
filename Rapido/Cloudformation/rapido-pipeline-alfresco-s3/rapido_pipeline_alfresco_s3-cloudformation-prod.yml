@@ -1,0 +1,160 @@
+Parameters:   
+    OutputBucket:
+      Type: String
+      Description: Lambda code bucket
+      Default: rapido-raportointi
+    OutputFolder:
+      Type: String
+      Description: Bucket where the lambdas output files are saved to (and where the code resides for now)
+      Default: input
+    LambdaCodeS3Key: 
+      Type: String
+      Description: Lambda code file
+      Default: rapido_pipeline_alfresco_s3
+    LambdaName:
+      Type: String
+      Description: Name of the lambda-function
+      Default: rapido_pipeline_alfresco_s3
+    Administrator:
+      Type: String
+      Default: johannes.andelin@cgi.com
+    Project:
+      Type: String
+      Default: rapido
+      Description: Name of the project
+    Env:
+      Type: String
+      Default: dev
+      Description: Environment where everything is deployed to
+      AllowedValues:
+      - dev
+      - qa
+      - prod
+    Secret:
+      Type: String
+      Description: Secrets for the alfresco pipeline pipeline
+      Default: rapido_alfresco_API_secrets
+    SubnetA:
+      Type: String
+      Default: subnet-0038f2c3b105e03e9
+    SubnetB:
+      Type: String
+      Default: subnet-02b8a92d92cf27b6e
+    SubnetC:
+      Type: String
+      Default: subnet-0da5ced2715f64623
+    VPCid:
+      Type: String
+      Default: vpc-07be1148af4bd484a
+    NestedFolder:
+      Type: String
+      Default: "Ryhmä 4 Rataverkon korjaustarpeet"
+    AllowedExcels:
+      Type: String
+      Default: "PVP_ohjelmointilomake_isot_peruskorjaukset.xlsx;PVP_ohjelmointilomake_Parantamishankkeet.xlsx;PVP_ohjelmointilomake_KaValvonta.xlsx;PVP_ohjelmointilomake_ROPE.xlsx;PVP_ohjelmointilomake_Paallysrakenneteema.xlsx;PVP_ohjelmointilomake_RAPU.xlsx;PVP_ohjelmointilomake_Rumputeema.xlsx;PVP_ohjelmointilomake_Siltateema.xlsx;PVP_ohjelmointilomake_Sähkö.xlsx;PVP_ohjelmointilomake_TSR-teema.xlsx;PVP_ohjelmointilomake_Tunneli&KL-teema.xlsx;PVP_ohjelmointilomake_Turvalaiteteema.xlsx;PVP_ohjelmointilomake_isot_peruskorjaukset.xlsx;PVP_ohjelmointilomake_VAK-rp.xlsx;PVP_ohjelmointilomake_Ympäristö.xlsx"
+
+Resources:
+    LambdaLogGroup:
+      Type: "AWS::Logs::LogGroup"
+      Properties:
+        LogGroupName: !Sub "/aws/lambda/${LambdaName}-${Env}"
+        Tags:
+          - Key: Owner
+            Value: CGI   
+  
+    LambdaExecutionRole:
+      Type: "AWS::IAM::Role"
+      Properties:        
+        RoleName: !Sub "${LambdaName}-${Env}-role"
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Principal:
+                Service:
+                  - "lambda.amazonaws.com"
+              Action: "sts:AssumeRole"
+        Path: "/"
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        Policies:
+        - PolicyName: !Sub "${LambdaName}-${Env}-policy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
+                  - "logs:PutLogEvents"
+                Resource:
+                  - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaName}-${Env}:*"
+              - Effect: "Allow"
+                Action:
+                  - "s3:PutObject"
+                Resource:
+                  -  !Sub "arn:aws:s3:::${OutputBucket}-${Env}/*"
+                  -  !Sub "arn:aws:s3:::${OutputBucket}-${Env}"
+              - Effect: "Allow"
+                Action:
+                  - "secretsmanager:GetSecretValue"
+                Resource:
+                  -  !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${Secret}-${Env}-UI6VKM"          
+        
+    AlfrescoPipelineSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupName: !Sub "${LambdaName}-${Env}"
+        GroupDescription: Lambda Security Group for alfresco pipeline
+        VpcId: !Ref "VPCid"
+        SecurityGroupIngress:
+          - CidrIp: 0.0.0.0/0
+            IpProtocol: -1 
+        SecurityGroupEgress:
+          - CidrIp: 0.0.0.0/0
+            IpProtocol: -1    
+
+    RapidoPipelineLambda:
+      Type: "AWS::Lambda::Function"
+      Properties:
+        Code:
+          S3Bucket: !Sub "${OutputBucket}-${Env}"
+          S3Key: !Sub "${LambdaName}-${Env}.zip"
+        Description: "Pipeline that fetches excels from alfresco API and saves to s3."
+        FunctionName: !Sub "${LambdaName}-${Env}"
+        Handler: !Sub "${LambdaName}-${Env}.lambda_handler"
+        MemorySize: 512
+        PackageType: "Zip"
+        Role: !GetAtt "LambdaExecutionRole.Arn"
+        Runtime: "python3.10"        
+        VpcConfig:
+            SecurityGroupIds:
+              - !Ref "AlfrescoPipelineSecurityGroup"
+            SubnetIds:
+              - !Ref "SubnetA"
+              - !Ref "SubnetB"
+              - !Ref "SubnetC"
+        Timeout: 120
+        Environment:
+            Variables:
+              output_bucket: !Sub "${OutputBucket}-${Env}"
+              output_folder: !Sub "${OutputFolder}"
+              secretname: !Sub "${Secret}-${Env}"
+        Tags:
+          - Key: Administrator
+            Value: !Ref "Administrator"
+          - Key: Project
+            Value: !Ref "Project"
+          - Key: Owner
+            Value: CGI
+
+    RapidoPipelineLambdaSchedule:
+      Type: AWS::Events::Rule
+      Properties:
+        Name: !Sub "${LambdaName}-${Env}-Schedule"
+        ScheduleExpression: cron(0 23 * * ? *)
+        State: ENABLED
+        Targets:
+          - Arn: !GetAtt RapidoPipelineLambda.Arn
+            Id: !Sub "${LambdaName}-${Env}"
+
