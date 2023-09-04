@@ -5,7 +5,7 @@ import boto3
 from requests.auth import HTTPBasicAuth
 import datetime
 import time
-import logging
+
 
 
 
@@ -58,42 +58,9 @@ def current_date():
 
 
 """
-datasetti_lista = os.environ["Dataset"].split(",")
-
-
-
-
-
-
-def assume_role():
-    try:
-        sts_connection = boto3.client('sts')
-        acct_b = sts_connection.assume_role(
-            RoleArn="arn:aws:iam::426182641979:role/waterway_crossaccount_role",
-            RoleSessionName="cross_acct_lambda"
-        )
-    except Exception as e:
-        print("sts connection for boto3.client failed for assume_role()")
-
-    ACCESS_KEY = acct_b['Credentials']['AccessKeyId']
-    SECRET_KEY = acct_b['Credentials']['SecretAccessKey']
-    SESSION_TOKEN = acct_b['Credentials']['SessionToken']
-
-    # create service client using the assumed role credentials:
-    try:
-        client = boto3.resource(
-            's3',
-            aws_access_key_id=ACCESS_KEY,
-            aws_secret_access_key=SECRET_KEY,
-            aws_session_token=SESSION_TOKEN,
-    )
-    except Exception as e:
-        print("Failed to create boto3.client for assume_role()")
-
-    
-    return client
-    
+datasetti_lista = os.environ["Dataset"].split(",")    
 """
+
 
 def s3_write(bucket_name, file_name, data):
     """
@@ -162,6 +129,7 @@ def lambda_handler(events, context):
         return "Secrets configuration error"
 
     target_bucket = os.environ["target_bucket"]
+    ais_landing_bucket = os.environ['ais_bucket'] #This is ais landing bucket for copy of vaylaalue (fairway areas) file for container geoPointsCompare
     filter = os.environ["filter"]
     # HUOM: jos tekee yhden arvon jossa esim , erotettu lista niin voi muuttaa lennosta (lähinnä poisto/yhden testaus kerrallaan)
     
@@ -193,7 +161,7 @@ def lambda_handler(events, context):
             continue
 
     if len(dataset_list) < 1:
-        print("Nothing to process. Please double check that there are datasets to process and their names are correct.")
+        print("Error. Nothing to process. Please double check that there are datasets to process and their names are correct.")
         exit()
         
     
@@ -216,11 +184,11 @@ def lambda_handler(events, context):
         try:
             response = requests.get(url_get, auth = HTTPBasicAuth(username, password))
         except requests.exceptions.RequestException as e:
-            print("Unable to reach API for dataset: {} at URL: {}. Error {}".format(datasetti, url_get, e))
+            print("Error. Unable to reach API for dataset: {} at URL: {}. Error {}".format(datasetti, url_get, e))
             continue
         if response.status_code == 401:
-            print("API respose 401. Unable to access data due to access denied. Shutting down operation.")
-            exit()
+            print("Error. API respose 401. Unable to access data due to access denied. Shutting down operation.")
+            
        
         
         json_data = ''
@@ -369,10 +337,22 @@ def lambda_handler(events, context):
     
         timestamp = current_date()
         epoch_current = current_millisecond_time()
-        #Tallentaa datan könttäosan
+        #Tallentaa kaikkien datasettien datan pääosan
         file_name = f"waterway/{datasetti}/{timestamp}/table.waterway_{datasetti}.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-        s3_write(target_bucket, file_name, data)          
+        
+        try:
+            s3_write(target_bucket, file_name, data)   
+        except:
+            print("Error. Unable to write file {} to bucket {}".format(file_name, target_bucket))
 
+        #This will save a copy of the vaylaalueet file to ais landing bucket for geoPointsCompare to consume
+        if datasetti == 'vaylaalueet':
+            file_name = "areas/ais-waterway-{}.csv".format(datasetti)
+            
+            try:
+                s3_write(ais_landing_bucket, file_name, data)
+            except:
+                print("Error. Unable to write file {} to bucket {}".format(file_name, ais_landing_bucket))
         # Processes the saving of the variables into the files.
         
         """ with open(f"{ADE_bucket}{timestamp}{datasetti}.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv", "w") as f:
@@ -385,9 +365,18 @@ def lambda_handler(events, context):
             #Määrittää linkkitiedoston adenimen sen mukaan onko kyseessä _luokitus vai _mitoitusalus
             
             file_name = f"waterway/{datasetti}_luokitus/{timestamp}/table.waterway_{datasetti}_luokitus.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-            s3_write(target_bucket, file_name, luokitusdata)  
+            
+            try:
+                s3_write(target_bucket, file_name, luokitusdata)  
+            except:
+                print("Error. Unable to write file {} to bucket {}".format(file_name, target_bucket))
+                
             file_name = f"waterway/{datasetti}_mitoitusalus/{timestamp}/table.waterway_{datasetti}_mitoitusalus.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-            s3_write(target_bucket, file_name, mitoitusalusdata)  
+            
+            try:
+                s3_write(target_bucket, file_name, mitoitusalusdata)  
+            except:
+                print("Error. Unable to write file {} to bucket {}".format(file_name, target_bucket))
             #s3.Bucket(bucket, adenimi_link)
             #object.put(Body=vayladata)
             #trystä oma metodi, file nimi, datamuuttuja
@@ -398,8 +387,11 @@ def lambda_handler(events, context):
         else:
             epoch_current = current_millisecond_time()
             file_name = f"waterway/{datasetti}_vayla/{timestamp}/table.waterway_{datasetti}_vayla.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv"
-           
-            s3_write(target_bucket, file_name, vayladata) 
+            
+            try:
+                s3_write(target_bucket, file_name, vayladata) 
+            except:
+                print("Error. Unable to write file {} to bucket {}".format(file_name, target_bucket))
             """ with open(f"{ADE_bucket}{timestamp}{datasetti}_vayla.{epoch_current}.batch.{epoch_current}.fullscanned.true.csv", "w") as f:
                 f.write(vayladata) """
     
