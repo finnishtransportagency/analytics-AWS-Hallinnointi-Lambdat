@@ -7,7 +7,7 @@ import datetime
 import time
 
 
-
+#TODO Vaihda lambdan nimi väyläpilveen -> ais-waterway-api-s3-csv-pipeline
 
 def get_secret(secretname):
     region_name = 'eu-central-1'
@@ -71,9 +71,10 @@ def s3_write(bucket_name, file_name, data):
     try:
         s3.Bucket(bucket_name).put_object(Key=file_name, Body=data, ACL='bucket-owner-full-control')
         obj_length = len(data)
-        print("File saved to s3 with name {}. File length: {}.".format(file_name, obj_length))
+        print("Wrote file: {} to bucket: {}. File length: {}.".format(file_name, bucket_name, obj_length))        
     except Exception as e:
-        print(f"Failed to write {file_name} to s3. Error: {e}")
+        print(f"Failed to write {file_name} to bucket {bucket_name}. Error: {e}")
+    
 
 
 def header_parse(header, data, id_text):
@@ -89,6 +90,7 @@ def header_parse(header, data, id_text):
                 vfield = str(vfield).replace("\n", " ").replace("\r", " ").strip().lower()
                 header += ';"' + vfield + '"'
             header += "\n"
+    
     return header
 
 def data_parse(data, parent_id):
@@ -147,6 +149,7 @@ def lambda_handler(events, context):
             
     dataset_list = []
     #checks for allt he dataset names found within environmental variables. Range can be limited for testing purposes.
+    print("Checking available datasets from environment variables")
     for i in range(1,4):
         
         id = "dataset{}".format(i)
@@ -159,7 +162,7 @@ def lambda_handler(events, context):
         except Exception as e:
             print("Dataset {} not found. Error {}".format(id, e))
             continue
-
+    print("Found {} datasets: {}".format(len(dataset_list), dataset_list))
     if len(dataset_list) < 1:
         print("Error. Nothing to process. Please double check that there are datasets to process and their names are correct.")
         exit()
@@ -176,13 +179,14 @@ def lambda_handler(events, context):
         if datasetti == '':
             continue
         
-        print(datasetti)
-
+        
+        print("Fetching data from API for dataset: {}".format(datasetti))
         url_get	= f"{url}{datasetti}{filter}" #.format(url, datasetti, url_end) 
         response = None
         
         try:
             response = requests.get(url_get, auth = HTTPBasicAuth(username, password))
+            #print("API fetch successful")
         except requests.exceptions.RequestException as e:
             print("Error. Unable to reach API for dataset: {} at URL: {}. Error {}".format(datasetti, url_get, e))
             continue
@@ -195,7 +199,7 @@ def lambda_handler(events, context):
         try:
             json_data = json.loads(response.text)
         except Exception as e:
-            print("Json.loads failed. Error: {}".format(e))
+            print("Json.loads failed for dataset {}. Error: {}".format(datasetti, e))
     
     
         # Parserin testi, luetaan tallennettu json levyltä
@@ -218,7 +222,7 @@ def lambda_handler(events, context):
         quote = "\""
         escape = "\""
         
-        print("items = {}".format(len(json_data)))
+        
     
         if len(json_data) > 0:
     
@@ -244,6 +248,7 @@ def lambda_handler(events, context):
             processed = []
             
             #Loops the json and determines the name of the 'id' field
+            print("Starting to process dataset: {}. No of items = {}".format(datasetti, len(json_data)))
             for item in json_data:
                 rowcounter += 1
     
@@ -265,17 +270,19 @@ def lambda_handler(events, context):
                 processed_mitoitusalus = []
                 
                 #Loops the field names in fields-list and parses the headers and data into the csv-like variables.
+                
                 for field in fields:
                     v = ''
                     
                         
                     
                     if field == 'vayla':
+                        
                         #varmistetaan, ettei tule sama vayla kahdesti.
                         if dataid not in processed_vayla:
+                            #print("Starting to process vayla-field for dataset: {}".format(datasetti))
                             processed_vayla.append(dataid)
-                        else:
-                            continue
+                        
                         
                         if vaylaheader == '':
                             #tässä luodaan otsikko tiedostolle
@@ -291,10 +298,11 @@ def lambda_handler(events, context):
                         v = ''
 
                     elif field == 'luokitus':
+                        
                         if dataid not in processed_luokitus:
+                            #print("Starting to process luokitus-field for dataset: {}".format(datasetti))
                             processed_luokitus.append(dataid)
-                        else:
-                            continue
+                        
                           
                         if luokitusheader == '':                              
                             luokitusheader = header_parse(luokitusheader, item[field], "vaylaid") 
@@ -305,10 +313,11 @@ def lambda_handler(events, context):
                         v = ''
 
                     elif field == 'mitoitusalus':
+                        
                         if dataid not in processed_mitoitusalus:
+                            #print("Starting to process mitoitusalus-field for dataset: {}".format(datasetti))
                             processed_mitoitusalus.append(dataid)
-                        else:
-                            continue    
+                            
                         
                             
                         if mitoitusheader == '':
@@ -321,7 +330,7 @@ def lambda_handler(events, context):
 
                     #Kentän parsiminen, jos field ei ole 'vayla', ''luokitus' tai 'mitoitusalus'
                     
-                    else:
+                    else:                        
                         v = item[field]
                         #print("Muu kuin väylä tai luokitus prosessoitu. {}".format(datasetti))
                     if v == None:
@@ -398,6 +407,6 @@ def lambda_handler(events, context):
         print("Load completed successfully for dataset {}".format(datasetti))
     time_track_end = time.time()
     time_total = int(time_track_end - time_track)
-    print("Load time {} seconds".format(time_total))
-    return "All datasets processed"
+    print("Following {} datasets were processed: {}. Load time {} seconds".format(len(dataset_list), dataset_list, time_total))
+    return
 #lambda_handler(None, None)
