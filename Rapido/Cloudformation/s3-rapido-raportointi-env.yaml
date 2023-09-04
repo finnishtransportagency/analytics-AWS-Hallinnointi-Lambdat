@@ -1,0 +1,56 @@
+Parameters:
+  BucketName:
+    Type: String
+    Default: rapido-raportointi
+  Administrator:
+    Type: String
+    Default: arto.lautamo@cgi.com
+  Project:
+    Type: String
+    Default: rapido
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - dev
+      - prod
+      - test
+    Description: Environment where the lambda is deployed
+
+Resources:
+  RapidoBucket:
+    Type: 'AWS::S3::Bucket'
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Sub "${BucketName}-${Environment}"
+      VersioningConfiguration:
+        Status: Suspended
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+        - Key: Administrator
+          Value: !Ref Administrator
+        - Key: Project
+          Value: !Ref Project
+  
+  RapidoBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref RapidoBucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:PutObject'
+            Effect: Allow
+            Resource:
+                - !Sub arn:aws:s3:::${RapidoBucket}
+                - !Sub arn:aws:s3:::${RapidoBucket}/*
+            Principal:
+              AWS:
+                - arn:aws:iam::426182641979:role/service-role/rapido_pipeline_alfresco_s3-role-og9f9ekw
