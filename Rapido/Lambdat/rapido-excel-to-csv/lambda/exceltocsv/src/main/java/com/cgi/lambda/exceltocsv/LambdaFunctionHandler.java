@@ -403,6 +403,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 					this.master = true;
 					this.skipheaders = this.masterSkipheaders;
 					this.listOfSheets = this.masterListOfSheets;
+					break;
 				}
 				else{
 					this.master = false;
