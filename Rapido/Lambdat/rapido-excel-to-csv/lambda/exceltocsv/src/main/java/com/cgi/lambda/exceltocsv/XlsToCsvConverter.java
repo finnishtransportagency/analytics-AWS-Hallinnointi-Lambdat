@@ -574,7 +574,7 @@ public class XlsToCsvConverter {
 							ln.add(this.fixOutputValue(value));
 							
 							if (this.master && col == 1){
-								if ((this.fixOutputValue(value).length()) > 0){
+								if (((this.fixOutputValue(value).length()) > 0) && !(this.fixOutputValue(value).equals("TBA"))){
 									skipEmptyRow = false;
 									if (!duplicates.add(value)){
 										this.log("VIRHE: Rivi " + (row + 1) + ": rivi-id ( " + ln.get(col) + " ) duplikaatti rivi-id loydetty" + "\n" + "Tiedostossa: " + this.sourceKey);
