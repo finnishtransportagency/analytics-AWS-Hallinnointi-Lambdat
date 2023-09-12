@@ -47,6 +47,7 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -98,7 +99,11 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 
 	private boolean processOnlyListedFiles = false;
 
-	private DateTime today = DateTime.now();
+
+	
+	
+	private DateTimeZone zone = DateTimeZone.forID("Europe/Helsinki");
+	private DateTime today = DateTime.now(zone);
 	private DateTime yesterday = today.minusDays(1);
 	private int yesterdayYear = yesterday.getYear();
 	private int yesterdayMonth = yesterday.getMonthOfYear();
@@ -130,6 +135,11 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 
 		this.context = context;
 		this.logger = new SimpleLambdaLogger(this.context);
+
+		this.logger.log("Timezone: " + today.getZone());
+		this.logger.log("Timestamp: " + today.toString());
+		this.logger.log("Date: " + today.getDayOfMonth() + "." + today.getMonthOfYear() + "." + today.getYear() + ", time: " + today.getHourOfDay() + ":" + today.getMinuteOfHour() + ":" + today.getSecondOfMinute());
+
 
 		// Vuoden ensimmainen ja viimeinen kasittelypaivamaara
 		this.firstDate = System.getenv("first_date");
@@ -201,7 +211,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 		}
 
 		// Vuosikuukausi (ja paiva)
-		this.runYearMonth = DateTime.now().toString("yyyy/MM/dd");
+		this.runYearMonth = this.today.toString("yyyy/MM/dd");
 		String t = System.getenv("add_path_ym");
 		if ("1".equals(t) || "true".equalsIgnoreCase(t) ) {
 			this.includeYearMonth = true;
@@ -504,9 +514,9 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 
 			// Lähteen arkistointi, arkistopolkuun lisätään päivämäärä (yyyyMMDD) ja tiedoston nimen eteen siirtoaikaleima (yyyyMMddhhmmss)
 			if (this.archiveBucket.length() > 0) {
-				DateTime dateTimeOfOutputFile = new DateTime(Long.parseLong(outputFile.timestamp));
-				String today = dateTimeOfOutputFile.toString("yyyyMMdd");
-				this.moveSourceFile(s3Client, this.sourceBucket, this.sourceKey, this.archiveBucket, this.archivePath + today + "/" + outputFile.timestamp + " " + this.sourceFileName);
+				///DateTime dateTimeOfOutputFile = new DateTime(Long.parseLong(outputFile.timestamp));
+				//String today = dateTimeOfOutputFile.toString("yyyyMMdd");
+				this.moveSourceFile(s3Client, this.sourceBucket, this.sourceKey, this.archiveBucket, this.archivePath + this.today.toString("yyyyMMdd") + "/" + outputFile.timestamp + " " + this.sourceFileName);
 			}
 
 		} catch (Exception e) {
