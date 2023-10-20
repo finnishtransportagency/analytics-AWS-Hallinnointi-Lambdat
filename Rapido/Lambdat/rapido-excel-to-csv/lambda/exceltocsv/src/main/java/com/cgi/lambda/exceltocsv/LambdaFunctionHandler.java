@@ -1,49 +1,60 @@
 package com.cgi.lambda.exceltocsv;
 
-import java.io.ByteArrayInputStream;
+// import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
+// import java.nio.charset.StandardCharsets;
+// import java.text.DateFormat;
+// import java.text.SimpleDateFormat;
+// import java.text.ParseException;
+// import java.io.File;
+// import java.util.ArrayList;
+// import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Date;
+// import java.util.Date;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.apache.poi.extractor.ExtractorFactory;
-import org.apache.poi.extractor.MainExtractorFactory;
+// import org.json.JSONArray;
+// import org.json.JSONObject;
+// import org.apache.poi.extractor.ExtractorFactory;
+// import org.apache.poi.extractor.MainExtractorFactory;
 import org.apache.poi.hssf.usermodel.HSSFWorkbookFactory;
-import org.apache.poi.ooxml.extractor.POIXMLExtractorFactory;
-import org.apache.poi.sl.usermodel.SlideShowFactory;
+// import org.apache.poi.ooxml.extractor.POIXMLExtractorFactory;
+// import org.apache.poi.sl.usermodel.SlideShowFactory;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.apache.poi.xslf.usermodel.XSLFSlideShowFactory;
+// import org.apache.poi.xslf.usermodel.XSLFSlideShowFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.apache.commons.io.FilenameUtils;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification.S3Entity;
+// import com.amazonaws.services.lambda.AWSLambda;
+//import com.amazonaws.services.lambda;
+// import com.amazonaws.services.lambda.AWSLambdaClientBuilder;
+// import com.amazonaws.services.lambda.model.InvokeRequest;
+// import com.amazonaws.services.lambda.model.InvokeResult;
+// import com.amazonaws.services.lambda.model.LogType;
+// AWS SDK for Java (v2) Lambda imports
+// import software.amazon.awssdk.services.lambda.LambdaClient;
+// import software.amazon.awssdk.services.lambda.model.InvokeRequest;
+// import software.amazon.awssdk.services.lambda.model.InvokeResponse;
+
 
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.Grantee;
-import software.amazon.awssdk.services.s3.model.Grant;
-import software.amazon.awssdk.services.s3.model.MetadataEntry;
+// import software.amazon.awssdk.services.s3.model.Grantee;
+// import software.amazon.awssdk.services.s3.model.Grant;
+// import software.amazon.awssdk.services.s3.model.MetadataEntry;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
-import software.amazon.awssdk.services.s3.model.Permission;
-import software.amazon.awssdk.services.s3.model.PutObjectAclRequest;
+// import software.amazon.awssdk.services.s3.model.Permission;
+// import software.amazon.awssdk.services.s3.model.PutObjectAclRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Object;
+// import software.amazon.awssdk.services.s3.model.S3Object;
 
 
 import org.joda.time.DateTime;
@@ -99,7 +110,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 
 	private boolean processOnlyListedFiles = false;
 
-
+	private String alarmTopic = "";
 	
 	
 	private DateTimeZone zone = DateTimeZone.forID("Europe/Helsinki");
@@ -122,7 +133,8 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 	private String sourceFileName;
 	private String sourceFileNameWithoutTimestamp;
 
-
+	private String kausi = "";
+	private boolean korjaustiedosto = false;
 
 
 	@Override
@@ -249,6 +261,11 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			}
 		}
 		
+		t = System.getenv("alarm_topic");
+		if (t == null) t = "";
+		if (t.length() > 0) {
+			this.alarmTopic = t;
+		}
 
 		// Muuntimen parametrit
 		t = System.getenv("charset");
@@ -342,6 +359,20 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 
 		this.sourceKeyPieces = this.sourceKey.split("/");
 		this.sourceFileName = this.sourceKeyPieces[sourceKeyPieces.length - 1].toLowerCase();
+		if (this.sourceFileName.startsWith("kausi_")){
+			try {
+				this.kausi = this.sourceFileName.split("_")[1];
+				if (this.kausi.length() == 7) {
+					this.sourceFileName = this.sourceFileName.substring(14);
+					this.logger.log("Korjaustiedosto. Paivitetaan tiedot kaudelle: " + this.kausi);
+					this.korjaustiedosto = true;
+				}
+			}
+			catch (Exception e) {
+					this.logger.log("Error parsing 'kausi_YYYY-MM_': '" + e.getMessage() + "'");
+				}	
+			
+		}
 		this.logger.log("sourceFileName is: " + this.sourceFileName);
 		this.sourceFileNameWithoutTimestamp = this.sourceFileName;
 
@@ -485,8 +516,15 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 
 			XlsToCsvConverter converter = new XlsToCsvConverter();
 			converter.setSourceKey(this.sourceKey);
-			converter.setYear(this.yesterdayYear);
-			converter.setMonth(this.yesterdayMonth);
+			if (this.kausi.length() == 7){
+				converter.setYear(Integer.parseInt(this.kausi.substring(0, 4)));
+				converter.setMonth(Integer.parseInt(this.kausi.substring(5)));
+			}
+			else {
+				converter.setYear(this.yesterdayYear);
+				converter.setMonth(this.yesterdayMonth);
+				}
+			converter.setKorjaustiedosto(this.korjaustiedosto);
 			converter.setMaster(this.master);
 			converter.setModifiedAt(this.modifiedAt);
 			converter.setCharSet(this.charset);
@@ -501,6 +539,9 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			converter.setTrimData(this.trimData);
 			converter.setSheetNames(sheetNames);
 			converter.setLogger(this.logger);
+			this.logger.log("Setting baseName of converter as: " + this.baseName);
+			converter.setBaseName(this.baseName);
+			converter.setAlarmTopic(this.alarmTopic);
 			converter.convert(in, out, this.fileType/*, excelFile*/);
 			in.close();
 

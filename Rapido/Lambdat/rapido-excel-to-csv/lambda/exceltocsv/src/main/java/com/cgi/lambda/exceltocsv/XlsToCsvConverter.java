@@ -3,21 +3,21 @@ package com.cgi.lambda.exceltocsv;
 
 import java.util.ArrayList;
 
-import java.util.Locale;
-import java.util.Map;
+// import java.util.Locale;
+// import java.util.Map;
 import java.util.Set;
 import java.util.Date;
-import java.util.HashMap;
+// import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.File;
+// import java.io.File;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+// import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+// import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -74,10 +74,17 @@ public class XlsToCsvConverter {
 	private int year = 0;
 	private int month = 0;
 	private String sourceKey = "";
+	private String baseName = "";
 	private int otsikkoVuosi = 0;
 	private int muokkausVuosi = 0;
+	private boolean korjaustiedosto = false;
+	private int puuttuvatKohdeToimenpiteet = 0;
 
 	private SimpleLogger logger = null;
+
+	private ErrorMail mail = new ErrorMail();
+
+	private String alarmTopic = "";
 
 
 	private void log(String s) {
@@ -204,6 +211,19 @@ public class XlsToCsvConverter {
 		this.sourceKey = sourceKey;
 	}
 
+	public void setBaseName(String b) {
+		this.baseName = b;
+		this.logger.log("baseName set to: " + this.baseName);
+	}
+	
+	public void setKorjaustiedosto(boolean korjaustiedosto) {
+		this.korjaustiedosto = korjaustiedosto;
+	}
+
+	public void setAlarmTopic(String alarmTopic) {
+		this.alarmTopic = alarmTopic;
+	}
+
 	// Tulostettavan tiedon muotoilut
 	private String fixOutputValue(String v) {
 		String s = (v != null) ? v : "";
@@ -265,6 +285,11 @@ public class XlsToCsvConverter {
 
 	// Muunna. Kutsuja antaa in ja out streamit
 	public RunStatusDto convert(InputStream in, OutputStream out, String fileType /*, File excelFile*/) {
+		this.log("baseName: " + this.baseName);
+		this.log("baseName: " + this.baseName);
+		this.mail.setSubject("Radanpito, virheitä tiedostossa: " + this.baseName);
+		this.mail.setBaseName(this.baseName); 
+
 		RunStatusDto result = new RunStatusDto();
 		result.setStatus(false);
 		Workbook workbook = null;
@@ -415,7 +440,7 @@ public class XlsToCsvConverter {
 			this.log(e.toString() + ", " + e.getMessage());
 		}
 
-		if (this.otsikkoVuosi != this.year){
+		if (this.otsikkoVuosi != this.year && !this.korjaustiedosto){
 			this.log("Otsikossa oleva vuosi (" + this.otsikkoVuosi + ") ei tasmaa latausvuoden (" + this.year + ") kanssa.");
 			
 			if (this.muokkausVuosi != 0){
@@ -436,10 +461,11 @@ public class XlsToCsvConverter {
 					this.month = 1;
 				}
 			}
-
-			
 		}
-
+		else if (this.otsikkoVuosi != this.year && this.korjaustiedosto){
+			this.log("Otsikossa oleva vuosi (" + this.otsikkoVuosi + ") ei tasmaa korjauskauden vuoden (" + this.year + ") kanssa.");
+			this.log("Kaytetaan korjauskauden vuotta (" + this.year + ")");
+		}
 
 		if (xlsheet != null) {
 
@@ -456,7 +482,8 @@ public class XlsToCsvConverter {
 
 				// Käsitellään kaikki rivit annetusta eteenpäin
 				for(row = this.skipheaders; row <= rows; row++) {
-					//this.log("Kasitellaan rivi: " + row);
+
+					// this.log("Kasitellaan rivi: " + row);
 					boolean skipEmptyRow = true;
 					boolean masterIdNotFound = false;
 					xlrow = xlsheet.getRow(row);
@@ -508,9 +535,9 @@ public class XlsToCsvConverter {
 						}
 
 						// Muotoillaan sarakkeen data
-						//this.log("sarakkeiden maara: " + cols);
+						// this.log("sarakkeiden maara: " + cols);
 						for(col = 0; col <= cols; col++) {
-							//this.log("Kasitellaan sarake: " + col);
+							// this.log("Kasitellaan sarake: " + col);
 							xlcell = xlrow.getCell(col);
 							value = "";
 							if (xlcell != null) {
@@ -571,13 +598,28 @@ public class XlsToCsvConverter {
 								xlcell.setCellValue(this.modifiedAt);
 							}
 							*/
+							if (korjaustiedosto && !this.master && col == 5 && value.length() <= 0){
+								value = (this.fixOutputValue("REMOVED"));
+								// skipEmptyRow = false;
+								// this.log("Poistettava rivi: " + (row + 1));
+							}	
+						
+							if (korjaustiedosto && this.master && col == 0 && value.length() <= 0){
+								value = (this.fixOutputValue("REMOVED"));
+								if (row == skipheaders){
+									value = (this.fixOutputValue("hanke"));
+								}
+							}
+
 							ln.add(this.fixOutputValue(value));
 							
+
 							if (this.master && col == 1){
 								if (((this.fixOutputValue(value).length()) > 0) && !(this.fixOutputValue(value).equals("TBA"))){
 									skipEmptyRow = false;
 									if (!duplicates.add(value)){
 										this.log("VIRHE: Rivi " + (row + 1) + ": rivi-id ( " + ln.get(col) + " ) duplikaatti rivi-id loydetty" + "\n" + "Tiedostossa: " + this.sourceKey);
+										this.mail.add("- Rivi " + (row + 1) + ": rivi-id ( " + ln.get(col) + " ) duplikaatti rivi-id loydetty.");
 									}
 								}
 								else{
@@ -587,27 +629,48 @@ public class XlsToCsvConverter {
 								}
 							}
 
+							if (!this.master && col == 5){
+								if (this.fixOutputValue(value).length() <= 0){
+									// if (this.puuttuvatKohdeToimenpiteet < 5){
+									// 	this.log("VAROITUS: Rivi " + (row + 1) + ": kohde_toimenpide puuttuu." + "\n" + "Tiedostossa: " + this.sourceKey);
+									// }
+									if (!korjaustiedosto){
+										this.puuttuvatKohdeToimenpiteet++;
+									}
+									// skipEmptyRow = true;
+
+								}
+							}
+
 							if (skipEmptyRow){
 								if (col < (cols) && !masterIdNotFound){
-									if ((this.fixOutputValue(value).length()) > 0){
+									if ((this.fixOutputValue(value).length()) > 0 && !(col == 5 && value == "REMOVED")){
 										skipEmptyRow = false;
 										//this.log("Row: " + row + ", Column: " + col);
 										//this.log("Found value: " + fixOutputValue(value) + ", row is not empty");
 									}
 								}
 								else if (col == cols){
-									emptyCount++;
-									if (row == rows){
-										this.log("Removed " + emptyCount + " empty rows.");
+									if (!korjaustiedosto){
+										emptyCount++;
+										if (row == rows){
+											this.log("Removed " + emptyCount + " empty rows.");
+											this.log("VAROITUS: kohde_toimenpide puuttui " + (this.puuttuvatKohdeToimenpiteet - emptyCount) + ":lta kantaan luetulta rivilta.");
+										}
 									}
-
+									else{
+										if (!master && this.fixOutputValue(value).length() > 0){
+											skipEmptyRow = false;
+											this.log("Poistettava rivi: ( " + (row + 1) + " ); rivi-id: ( " + this.fixOutputValue(value) + " )");
+										} 
+									}
 								}
 
 								//else if (skipEmptyRow){
 								//	this.log("tyhja rivi: " + xlcell.getRowIndex());
 								//}
 							}
-							else if (col == cols){
+							if (!skipEmptyRow && col == cols){
 								if (row == this.skipheaders){
 									ln.add(this.fixOutputValue("modified_at"));
 									ln.add(this.fixOutputValue("year"));
@@ -630,6 +693,10 @@ public class XlsToCsvConverter {
 										ln.add(this.fixOutputValue("rivi_id"));
 										ln.add(this.fixOutputValue("taso"));
 									}
+
+									if (!this.master) {
+										ln.add(this.fixOutputValue("tiedostonimi"));
+									}
 									
 								}
 								else{
@@ -639,11 +706,13 @@ public class XlsToCsvConverter {
 									//ln.add(this.fixOutputValue((this.modifiedAt).split("-")[1]));
 									ln.add(this.fixOutputValue(String.valueOf(this.month)));
 									if (!this.master) {
-										if (!duplicates.add(value)){
+										if (!duplicates.add(value) && !(korjaustiedosto && value.length() <= 0)){
 											this.log("VIRHE: Rivi " + (row + 1) + ": rivi-id ( " + ln.get(cols) + " ) duplikaatti rivi-id loydetty" + "\n" + "Tiedostossa: " + this.sourceKey);
+											this.mail.add("- Rivi " + (row + 1) + ": rivi-id ( " + ln.get(cols) + " ) duplikaatti rivi-id löydetty.");
 										}
 										if (value == null || value.length() <= 0){
 											this.log("VIRHE: Rivi-id puuttuu rivilta " + (row + 1) + "\n" + "Tiedostossa: " + this.sourceKey);
+											this.mail.add("- Rivi " + (row + 1) + ": rivi-id puuttuu.");
 											ln.add(this.fixOutputValue(""));
 											ln.add(this.fixOutputValue(this.trSelite));
 											ln.add(this.fixOutputValue(""));
@@ -659,6 +728,7 @@ public class XlsToCsvConverter {
 											}
 											else{
 												this.log("VIRHE: Rivi-id on vaarassa muodossa, teemaa ja taustaryhmaa ei saada johdettua" + "\n" + "Tiedostossa: " + this.sourceKey);
+												this.mail.add("- Rivi " + (row + 1) + ": rivi-id ( " + ln.get(cols) + " ): Rivi-id on väärässä muodossa.");
 												ln.add(this.fixOutputValue(""));
 												ln.add(this.fixOutputValue(this.trSelite));
 												ln.add(this.fixOutputValue(""));
@@ -712,8 +782,21 @@ public class XlsToCsvConverter {
 										}
 										
 									}
+									if (!this.master) {
+										ln.add(this.fixOutputValue(this.baseName));
+									}
 
 								}
+
+								if (row == rows){
+									if (emptyCount > 0){
+										this.log("Poistettiin " + emptyCount + " tyhjaa rivia.");
+									}
+									if (this.puuttuvatKohdeToimenpiteet > emptyCount){
+										this.log("VAROITUS: kohde_toimenpide puuttui " + (this.puuttuvatKohdeToimenpiteet - emptyCount) + ":lta kantaan luetulta rivilta.");
+									}
+								}
+
 							}
 						}
 
@@ -778,6 +861,21 @@ public class XlsToCsvConverter {
 
 			this.log("Sheet '" + sheetName + "': data lines written: " + datalines);
 			result.setStatus(true);
+		}
+
+		if (this.mail.getMessage().length() > 0){
+			this.log("Lähetetään virhesahkoposti...");
+			this.mail.add(
+				"\n\nTarvittaessa ota yhteyttä:" +
+				"\nKanta/lataukset: vaylavirasto.ade@cgi.com" +
+				"\nValvonta: vayla.apk@cgi.com" +
+				"\n\n Ystävällisin terveisin,\n" + 
+				" CGI Suomi - Radanpidon raportointi"
+				);
+			//this.mail.sendMail();
+			if (alarmTopic.length() > 0){
+				this.mail.sendSns(this.alarmTopic);
+			}
 		}
 
 		return result;

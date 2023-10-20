@@ -42,66 +42,89 @@
     </plugins>
   </build>
 
-  <dependencyManagement>
+  <!-- dependencyManagement>
     <dependencies>
 
-      <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-bom</artifactId>
-        <version>1.11.469</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-      
-      <dependency>
-        <groupId>software.amazon.awssdk</groupId>
-        <artifactId>bom</artifactId>
-        <version>2.17.46</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
       
     </dependencies>
-  </dependencyManagement>
+  </dependencyManagement -->
 
   <dependencies>
+    
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.12</version>
-      <scope>test</scope>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>2.5.25</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/s3 -->
+    <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3</artifactId>
+        <version>2.20.157</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sns -->
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-sns</artifactId>
+        <version>1.12.560</version>
     </dependency>
 
 
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/secretsmanager 
     <dependency>
-      <groupId>software.amazon.awssdk</groupId>
-      <artifactId>s3</artifactId>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>secretsmanager</artifactId>
+        <version>2.20.157</version>
+    </dependency>
+    -->
+
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/lambda -->
+    <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>lambda</artifactId>
+        <version>2.17.206</version>
     </dependency>
 
-    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
+    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-lambda-java-core -->
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-java-sdk-s3</artifactId>
-      <version>1.12.353</version>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-lambda-java-core</artifactId>
+        <version>1.2.3</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-lambda -->
+    <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-lambda</artifactId>
+        <version>1.12.560</version>
     </dependency>
 
 
+    <!-- https://mvnrepository.com/artifact/software.amazon.awssdk/ses 
     <dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-core</artifactId>
-      <version>1.2.1</version>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>ses</artifactId>
+        <version>2.20.157</version>
     </dependency>
+    -->
+
+
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-lambda-java-events</artifactId>
       <version>3.11.0</version>
     </dependency>
 
-    <!-- dependency>
-      <groupId>com.amazonaws</groupId>
-      <artifactId>aws-lambda-java-log4j2</artifactId>
-      <version>1.5.1</version>
-    </dependency -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.12</version>
+      <scope>test</scope>
+    </dependency>
 
     <dependency>
       <groupId>org.json</groupId>
@@ -134,21 +157,6 @@
       <version>5.1.1</version>
     </dependency>
 
-    <!--
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.7.5</version>
-    </dependency>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-log4j12</artifactId>
-      <version>1.7.5</version>
-    </dependency>
-    -->
-
-    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-    <!-- -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
