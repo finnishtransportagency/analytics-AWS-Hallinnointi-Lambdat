@@ -1,0 +1,214 @@
+Parameters:
+  Env:
+    Type: String
+    Default: dev
+    Description: Environment where everything is deployed to
+    AllowedValues:
+    - dev
+    - qa
+    - prod
+  TestBucketDev:
+    Type: String
+    Description: Testing output
+    Default: aaa-oikeustestibuketti
+  TestBucketProd:
+    Type: String
+    Description: Testing output
+    Default: aaa-tilhatestibuketti
+  OutputBucket:
+    Type: String
+    Description: File output bucket
+    Default: vayla-file-load-bucket
+  OutputFolder:
+    Type: String
+    Description: Folder where the lambdas output files are saved to (and where the initial code resides for now. Updated in github)
+    Default: tarinamittaus
+  LandingBucket: 
+    Type: String
+    Description: Tarinamittaus landing bucket for glue. Also has raw ratakilometrit data
+    Default: tarinamittaus-landing-bucket
+  LambdaCodeBucket: 
+    Type: String
+    Description: Lambda code bucket
+    Default: cloudformation-deployment-code-bucket
+  LambdaCodeFolder:
+    Type: String
+    Description: Lambda code folder in cloudformation-deployment-code-bucket
+    Default: tarinamittaus
+  LambdaName:
+    Type: String
+    Description: Name of the lambda-function
+    Default: tarinamittaus_ratakilometri_api_reader
+  Administrator:
+    Type: String
+    Default: johannes.andelin@cgi.com
+  Project:
+    Type: String
+    Default: tarinamittaus
+    Description: Name of the project
+  ProjectSuffix:
+    Type: String
+    Default: ratakilometrit
+    Description: A subset under the project
+  SecretDev:
+    Type: String
+    Description: Secrets for tarinamittaus access
+    Default: vayla_tarina_db_secrets
+  SecretProd:
+    Type: String
+    Description: Secrets for tarinamittaus access
+    Default: vayla-tarinamittaus-db-secrets
+  ProdSubnetA:
+    Type: String
+    Default: subnet-0027e803ccca510f4
+  ProdSubnetB:
+    Type: String
+    Default: subnet-020f2986dcbc67c1d
+  ProdSubnetC:
+    Type: String
+    Default: subnet-0dacabe6c56d7b752
+  ProdVPCid:
+    Type: String
+    Default: vpc-0e2f67b129c15b391
+  DevSubnetA:
+    Type: String
+    Default: subnet-0038f2c3b105e03e9
+  DevSubnetB:
+    Type: String
+    Default: subnet-02b8a92d92cf27b6e
+  DevSubnetC:
+    Type: String
+    Default: subnet-0da5ced2715f64623
+  DevVPCid:
+    Type: String
+    Default: vpc-07be1148af4bd484a
+  SecretSuffixDev:
+    Type: String
+    Description: The suffix for secretname dev. To automate it according to env
+    Default: 9kNvUl
+  SecretSuffixProd:
+    Type: String
+    Description: The suffix for secretname prod. To automate it according to env
+    Default: mWlb5D
+    
+
+Conditions:
+  isDev: !Equals [ !Ref Env, "dev" ]
+  isProd: !Equals [ !Ref Env, "prod" ]
+
+Resources:
+  TarinamittausLambdaLogGroup:
+    Type: "AWS::Logs::LogGroup"
+    Properties:
+      LogGroupName: !Sub "/aws/lambda/${LambdaName}_${Env}"
+      Tags:
+        - Key: Owner
+          Value: CGI
+
+  TarinamittausExecutionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub "${LambdaName}_${Env}_role"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action: "sts:AssumeRole"
+      Path: "/"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+      - PolicyName: !Sub "${LambdaName}_${Env}_policy"
+        PolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: "Allow"
+              Action:
+                - "logs:CreateLogStream"
+                - "logs:CreateLogGroup"
+                - "logs:PutLogEvents"
+              Resource:
+                - !Sub "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${LambdaName}_${Env}:*"
+            - Effect: "Allow"
+              Action:
+                - "s3:PutObject"
+                - "s3:GetObjectAcl"
+                - "s3:PutObjectAcl"
+              Resource:
+                -  !Sub "arn:aws:s3:::${OutputBucket}-${Env}/*"
+                -  !Sub "arn:aws:s3:::${OutputBucket}-${Env}"
+                -  !If [isProd, !Sub "arn:aws:s3:::${TestBucketProd}/*", !Sub "arn:aws:s3:::${TestBucketDev}/*"]
+                -  !If [isProd, !Sub "arn:aws:s3:::${TestBucketProd}", !Sub "arn:aws:s3:::${TestBucketDev}"]
+                -  !If [isProd, !Sub "arn:aws:s3:::${LandingBucket}-${Env}/*", !Sub "arn:aws:s3:::${LandingBucket}-${Env}/*"]
+                -  !If [isProd, !Sub "arn:aws:s3:::${LandingBucket}-${Env}", !Sub "arn:aws:s3:::${LandingBucket}-${Env}"]
+            - Effect: "Allow"
+              Action:
+                - "secretsmanager:GetSecretValue"
+              Resource:
+                - !If [isProd, !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretProd}-${Env}-${SecretSuffixProd}",
+                !Sub "arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${SecretDev}-${SecretSuffixDev}"]
+    
+  TarinamittausPipelineSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: !Sub "${LambdaName}_${Env}"
+      GroupDescription: !Sub "Lambda Security Group for ${Project} pipeline"
+      VpcId: !If [isProd, !Ref "ProdVPCid", !Ref "DevVPCid"]
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1 
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          IpProtocol: -1
+
+  TarinamittausApiReaderLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      Code:
+        S3Bucket: !Sub "${LambdaCodeBucket}-${Env}"
+        S3Key: !Sub "${OutputFolder}/${LambdaName}_${Env}.zip"
+      Description: !Sub "Extracts data from rata api for project ${Project}, transforms it into csv and loads to s3 for ade"
+      FunctionName: !Sub "${LambdaName}_${Env}"
+      Handler: !Sub "${LambdaName}_${Env}.lambda_handler"
+      MemorySize: 512
+      PackageType: "Zip"
+      Role: !GetAtt "TarinamittausExecutionRole.Arn"
+      Runtime: "python3.10"
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref "TarinamittausPipelineSecurityGroup"
+        SubnetIds:
+          - !If [isProd, !Ref "ProdSubnetA", !Ref "DevSubnetA"]
+          - !If [isProd, !Ref "ProdSubnetB", !Ref "DevSubnetB"]
+          - !If [isProd, !Ref "ProdSubnetC", !Ref "DevSubnetC"]
+      Timeout: 120
+      Environment:
+        Variables:
+          secretname: !If [isProd, !Sub "${SecretProd}-${Env}", !Ref "SecretDev"]
+          output_bucket: !Sub "${OutputBucket}-${Env}"
+          test_bucket: !If [isProd, !Ref "TestBucketProd", !Ref "TestBucketDev"]
+          project: !Ref "Project"
+          project_suffix: !Ref "ProjectSuffix"
+          landing_bucket: !If [isProd, !Sub "${LandingBucket}-${Env}", !Sub "${LandingBucket}-${Env}"]
+      Tags:
+        - Key: Administrator
+          Value: !Ref "Administrator"
+        - Key: Project
+          Value: !Ref "Project"
+        - Key: Owner
+          Value: CGI
+
+  TarinamittausApiReaderLambdaSchedule:
+    Condition: isProd
+    Type: AWS::Events::Rule
+    DependsOn: TarinamittausApiReaderLambda
+    Properties:
+      Name: !Sub "${LambdaName}_${Env}_Schedule"
+      ScheduleExpression: cron(0 20 * * ? *)
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt TarinamittausApiReaderLambda.Arn
+          Id: !Sub "${LambdaName}_${Env}"
