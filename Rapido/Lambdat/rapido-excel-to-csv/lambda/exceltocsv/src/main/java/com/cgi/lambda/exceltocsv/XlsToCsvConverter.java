@@ -536,6 +536,11 @@ public class XlsToCsvConverter {
 
 						// Muotoillaan sarakkeen data
 						// this.log("sarakkeiden maara: " + cols);
+						if (this.master){
+							if (cols > 13){
+								cols = 13;
+							}
+						}
 						for(col = 0; col <= cols; col++) {
 							// this.log("Kasitellaan sarake: " + col);
 							xlcell = xlrow.getCell(col);

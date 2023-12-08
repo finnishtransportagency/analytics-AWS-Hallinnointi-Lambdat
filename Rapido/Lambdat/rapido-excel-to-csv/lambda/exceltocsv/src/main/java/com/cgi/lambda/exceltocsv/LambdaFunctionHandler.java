@@ -363,7 +363,7 @@ public class LambdaFunctionHandler implements RequestHandler<S3Event, String> {
 			try {
 				this.kausi = this.sourceFileName.split("_")[1];
 				if (this.kausi.length() == 7) {
-					this.sourceFileName = this.sourceFileName.substring(14);
+					//this.sourceFileName = this.sourceFileName.substring(14);
 					this.logger.log("Korjaustiedosto. Paivitetaan tiedot kaudelle: " + this.kausi);
 					this.korjaustiedosto = true;
 				}
