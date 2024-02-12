@@ -174,7 +174,7 @@ def get_all_folder_id_name(username:str, password:str, api_url:str, folder_id:st
     return folder_id_name_list
 
 
-def get_excel_id_and_name(username: str, password: str, api_url: str, folder_id_name_tuple: tuple, excel_name_list: list):
+def get_excel_id_and_name(username: str, password: str, api_url: str, folder_id_name_tuple: tuple, excel_name_list: list, id_list: list):
     '''
     Gets an excel id from the folder and name the value of modifiedAt
     The id is used to get the excel binary.    
@@ -207,7 +207,7 @@ def get_excel_id_and_name(username: str, password: str, api_url: str, folder_id_
         return (excel_id, excel_name), modified_at
         
     #print("Content of the api call from url {}:".format(url))
-    #print(data)
+    print(data)
 
 
     #The json object where the items we want to read are at
@@ -221,33 +221,37 @@ def get_excel_id_and_name(username: str, password: str, api_url: str, folder_id_
         if folder_name not in excluded_errors:
         #print(f'Excluded errors: {excluded_errors}')
             print("Error. No items to get from folder: {}, id: {}".format(folder_name, folder_id))            
-        return (excel_id, excel_name), modified_at
+        return (excel_id, excel_name), modified_at, 0
     
     for item in entries:
         #Check if the response returned content in folder:        
     
         item_content = item['entry']
         excel_name = item_content['name']
+        excel_id = item_content['id']
         #is_file = item_content['isFile']        
         #print('Excel id = {}'.format(item))
         #print('Excel folder content = {}'.format(item_content))        
-        
-        #print(f'Checking if {excel_name} in excel name list..')
+        #data_read_counter += 1        
+        if excel_id in id_list:
+            continue
+
+        print(f'Checking if {excel_name} in excel name list..')
         if excel_name in excel_name_list:
-            #print("Check OK!")
+            print("Check passed!")
             excel_id = item_content['id']     
             #print(excel_id)       
             created_at_raw = item_content['createdAt']
             modified_at_raw = item_content.get('modifiedAt', created_at_raw)            
             modified_at = modified_at_raw.split('T')[0]
             #print(modified_at)
-            
-            return (excel_id, excel_name), modified_at
+            #data_read_counter += 1
+            return (excel_id, excel_name), modified_at, data_count
         
                         
     
     #If the correct file is not found from this folder, return None and move on to next folder after this function
-    return (excel_id, None), modified_at
+    return (excel_id, None), modified_at, 0
     
 
 
@@ -331,6 +335,11 @@ def lambda_handler(event, context):
         folder_id = parent_folder_tuple[0]
         folder_name = parent_folder_tuple[1]
         
+
+        read_counter = 0
+        count_of_data = 1
+        excel_id_checked = []
+        
         #Currently only one nested folder. If we get more, change nested_folder_list into actual list and split it after get_secret()
         #Process nested folder:
         if folder_name == nested_folder_list:
@@ -344,10 +353,10 @@ def lambda_handler(event, context):
                 folder_name_n = folder_tuple[1]
                 folder_id_n = folder_tuple[0]
                 #Use the folder ids to get excel id's from within those folders
-                excel_id_and_name, date_modified = get_excel_id_and_name(username, password, url, folder_tuple, excel_name_list)
+                excel_id_and_name, date_modified, count_of_data = get_excel_id_and_name(username, password, url, folder_tuple, excel_name_list, excel_id_checked)
                 print(f'excel_id_and_name: {excel_id_and_name} and {date_modified}')
 
-                if excel_id_and_name == (None, None) and date_modified == None:
+                if excel_id_and_name == (None, None) and date_modified == None: 
                     #Below if is temporary
                     if folder_name_n not in excluded_errors:
                         print(f"Error. An error occured while returning to main function with None values, or nothing to process from folder: {folder_name_n} with id: {folder_id_n}. Moving onto next folder id on the list or finishing run if this was last id.")
@@ -368,20 +377,40 @@ def lambda_handler(event, context):
 
         #If folder contains excel files, process normally:
         else:
-            #Use the folder ids to get excel id's from within those folders
-            excel_id_and_name, date_modified = get_excel_id_and_name(username, password, url, parent_folder_tuple, excel_name_list)
-            print(f'excel_id_and_name: {excel_id_and_name} and {date_modified}')
+            
+            while read_counter < count_of_data:
+                #Use the folder ids to get excel id's from within those folders
+                excel_id_and_name, date_modified, count_of_data = get_excel_id_and_name(username, password, url, parent_folder_tuple, excel_name_list, excel_id_checked)
+                read_counter += 1
 
-            if excel_id_and_name == (None, None) and date_modified == None:
-                #Below if is temporary
-                if folder_name not in excluded_errors:
-                    print(f"Error. An error occured while returning to main function with None values, or nothing to process from folder: {folder_name} with id: {folder_id}. Moving onto next folder id on the list or finishing run if this was last id.")
-                continue
+                print(f'excel_id_and_name: {excel_id_and_name} and {date_modified}')
+                excel_file_id = excel_id_and_name[0]
+                excel_file_name = excel_id_and_name[1]
 
-            #Use the excel ids to get the binary of each excel file
-            excel_binary = get_excel_binary_content(username, password, url, excel_id_and_name)
-            #Save the binary as .xlsx into s3 bucket
-            save_excel_to_s3(excel_binary, excel_id_and_name, date_modified)
+                excel_id_checked.append(excel_file_id)
+
+                if excel_id_and_name == (None, None) and date_modified == None:
+                    #Below if is temporary
+                    if folder_name not in excluded_errors:
+                        print(f"Error. An error occured while returning to main function with None values, or nothing to process from folder: {folder_name} with id: {folder_id}. Moving onto next folder id on the list or finishing run if this was last id.")
+                    continue
+
+                if excel_file_name not in excel_name_list:
+                    print(f'File named {excel_file_name} not found in excel_name_list. Please check if it should be there (most likely not as this is to filter out unwanted, non error items.)')
+                    continue
+
+                #Use the excel ids to get the binary of each excel file
+                excel_binary = get_excel_binary_content(username, password, url, excel_id_and_name)
+                #Save the binary as .xlsx into s3 bucket
+                save_excel_to_s3(excel_binary, excel_id_and_name, date_modified)   
+
+                if read_counter < count_of_data:    
+                    print(f'More files to check from folder {folder_name}. Looping the folder again to look for downloadable files.')     
+
+                elif read_counter >= count_of_data:
+                    print(f'All files from folder {folder_name} downloaded. Moving on to the next one')
+
+
 
             total_files += 1    
     
