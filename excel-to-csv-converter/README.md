@@ -1,4 +1,4 @@
-# rapido-excel-to-csv
+# excel-to-csv-converter
 
 ## Prerequisites
 Before building and using this Lambda, make sure you have the following installed:
@@ -21,6 +21,6 @@ bash
 
 ## Using the Lambda
 After building the Lambda, you can use the resulting JAR file located at:
-**./rapido-excel-to-csv/lambda/exceltocsv/target/excel-to-csv-s3-lambda-1.0.0.jar**
+**./excel-to-csv-converter/lambda/exceltocsv/target/excel-to-csv-s3-lambda-1.0.0.jar**
 
 This JAR file can be deployed as code for your Lambda function.
