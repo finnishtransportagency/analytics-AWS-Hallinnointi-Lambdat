@@ -142,21 +142,46 @@ exports.handler = async(event) => {
             console.log('## manifest destkey: ' + destKey);
             
             // lisataan CRLF manifest tiedostoon per ADE speksit
-            s3.putObject({
+            let devParams = {
                 Bucket: process.env.destBucketManifest,
                 Key: destKey,
                 Body: JSON.stringify(manifestdata) + '\r\n',
                 ACL: 'bucket-owner-full-control'
-            }, function(err, response){
+            };
+            
+            // tuotannolle omat parametrit
+            let prodParams = {
+                Bucket: process.env.destBucketManifestProd,
+                Key: destKey,
+                Body: JSON.stringify(manifestdata) + '\r\n',
+                ACL: 'bucket-owner-full-control'
+            };
+            
+            //siirto kehitykseen
+            s3.putObject(devParams, function(err, response){
                 if(err){
+                    console.log('## error uploading to dev bucket');
                     console.log(err);
-                    reject(err);
+                    //kehitysmanifestin siirron onnistuminen tai epaonnisutminen ei aiheuta jatkotoimenpiteita
                 } else {
-                    console.log('## s3 put manifest response: ' + JSON.stringify(response));
+                    console.log('## s3 put dev manifest response: ' + JSON.stringify(response));
+                    //kehitysmanifestin siirron onnistuminen tai epaonnisutminen ei aiheuta jatkotoimenpiteita
+                }
+            });
+            
+            //siirto tuotantoon
+            s3.putObject(prodParams, function(err, response){
+                if(err){
+                    console.log('## error uploading to prod bucket');
+                    console.log(err);
+                    callback(err, 'failure');
+                } else {
+                    console.log('## s3 put prod manifest response: ' + JSON.stringify(response));
                     callback(null, 'done');
                 }
             });
         }
+        
     });
 
 };
