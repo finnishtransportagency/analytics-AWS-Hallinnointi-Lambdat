@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "async-waterfall": "^0.1.5",
-    "fast-xml-parser": "^3.16.0",
+    "fast-xml-parser": "^4.2.4",
     "jsonpath": "^1.0.2",
     "xml2json": "^0.12.0"
   },
