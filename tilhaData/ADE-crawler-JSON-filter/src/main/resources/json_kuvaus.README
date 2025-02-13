@@ -1,4 +1,0 @@
-JSON file filters for lambda. Holds WHITELIST information 
-a) name of the file/table the filter is applied to 
-b) the columns that will be checked
-c) the values that are accepted for the json (whole row)
